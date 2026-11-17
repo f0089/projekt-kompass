@@ -27,8 +27,8 @@
 <!-- Schwarzes Glas-Stern -->
 <path d="M256 92C267 192 320 245 420 256C320 267 267 320 256 420C245 320 192 267 92 256C192 245 245 192 256 92Z" fill="#000"/>
 <path d="M256 92C267 192 320 245 420 256C320 267 267 320 256 420C245 320 192 267 92 256C192 245 245 192 256 92Z" fill="url(#stg)"/>
-<g clip-path="url(#cs)"><ellipse cx="256" cy="150" rx="26" ry="70" fill="#fff" opacity=".10" filter="url(#b6)"/></g>
-<path d="M256 92C267 192 320 245 420 256C320 267 267 320 256 420C245 320 192 267 92 256C192 245 245 192 256 92Z" fill="none" stroke="url(#rim)" stroke-width="4.5"/>
+<g clip-path="url(#cs)"><path d="M256 92L256 256L92 256Z" fill="#fff" opacity=".10"/><ellipse cx="256" cy="150" rx="26" ry="70" fill="#fff" opacity=".10" filter="url(#b6)"/></g>
+<path d="M256 92C267 192 320 245 420 256C320 267 267 320 256 420C245 320 192 267 92 256C192 245 245 192 256 92Z" fill="none" stroke="url(#rim)" stroke-width="3.5"/>
 <path d="M256 92C267 192 320 245 420 256C320 267 267 320 256 420C245 320 192 267 92 256C192 245 245 192 256 92Z" fill="none" stroke="#fff" stroke-opacity=".12" stroke-width="12" filter="url(#b6)" clip-path="url(#cs)"/>
 <ellipse cx="236" cy="206" rx="22" ry="7" transform="rotate(-40 236 206)" fill="url(#spec)" opacity=".7"/>
 </svg>
