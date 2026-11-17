@@ -1,12 +1,22 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><defs>
-<linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#26382d"/><stop offset="1" stop-color="#0f1a14"/></linearGradient>
-<radialGradient id="gl" cx=".5" cy=".38" r=".6"><stop offset="0" stop-color="#7fb08a" stop-opacity=".35"/><stop offset="1" stop-color="#7fb08a" stop-opacity="0"/></radialGradient>
-<linearGradient id="nl" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fbf4e3"/><stop offset="1" stop-color="#d9cfb4"/></linearGradient></defs>
-<rect width="512" height="512" fill="url(#bg)"/><rect width="512" height="512" fill="url(#gl)"/>
-<circle cx="256" cy="256" r="170" fill="none" stroke="#e9dfc4" stroke-opacity=".28" stroke-width="6"/>
-<circle cx="256" cy="256" r="150" fill="none" stroke="#e9dfc4" stroke-opacity=".12" stroke-width="3"/>
-<g stroke="#e9dfc4" stroke-opacity=".55" stroke-width="7" stroke-linecap="round"><path d="M256 70v34M256 408v34M70 256h34M408 256h34"/></g>
-<g stroke="#e9dfc4" stroke-opacity=".25" stroke-width="5" stroke-linecap="round"><path d="M124 124l22 22M366 366l22 22M388 124l-22 22M146 366l-22 22"/></g>
-<path d="M256 112L318 256L194 256Z" fill="#e0793f"/><path d="M256 112L256 256L194 256Z" fill="#000" fill-opacity=".12"/>
-<path d="M256 400L318 256L194 256Z" fill="url(#nl)"/><path d="M256 400L256 256L194 256Z" fill="#000" fill-opacity=".10"/>
-<circle cx="256" cy="256" r="15" fill="#14201a"/><circle cx="256" cy="256" r="6" fill="#e9dfc4"/></svg>
+<linearGradient id="bg" x1=".2" y1="0" x2=".8" y2="1"><stop offset="0" stop-color="#1c2a5c"/><stop offset=".55" stop-color="#101a3f"/><stop offset="1" stop-color="#080e26"/></linearGradient>
+<radialGradient id="aur" cx=".5" cy=".5" r=".55"><stop offset="0" stop-color="#ffc774" stop-opacity=".32"/><stop offset="1" stop-color="#ffc774" stop-opacity="0"/></radialGradient>
+<linearGradient id="gl" x1=".25" y1="0" x2=".75" y2="1"><stop offset="0" stop-color="#ffffff" stop-opacity=".30"/><stop offset=".5" stop-color="#cfd8ff" stop-opacity=".10"/><stop offset="1" stop-color="#ffffff" stop-opacity=".06"/></linearGradient>
+<linearGradient id="rim" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffe3b0" stop-opacity=".95"/><stop offset=".5" stop-color="#d9a45c" stop-opacity=".35"/><stop offset="1" stop-color="#ffd9a0" stop-opacity=".7"/></linearGradient>
+<radialGradient id="hl" cx=".5" cy="0" r="1"><stop offset="0" stop-color="#fff" stop-opacity=".55"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient>
+<linearGradient id="st" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff3d6"/><stop offset=".5" stop-color="#ffd9a0"/><stop offset="1" stop-color="#f2b66a"/></linearGradient>
+<filter id="blur" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="16"/></filter>
+<filter id="sh" x="-30%" y="-30%" width="160%" height="170%"><feDropShadow dx="0" dy="14" stdDeviation="16" flood-color="#000" flood-opacity=".45"/></filter>
+<clipPath id="cd"><circle cx="256" cy="256" r="196"/></clipPath></defs>
+<rect width="512" height="512" fill="url(#bg)"/>
+<circle cx="150" cy="120" r="150" fill="#3b57c9" opacity=".22" filter="url(#blur)"/>
+<circle cx="400" cy="420" r="130" fill="#e0793f" opacity=".14" filter="url(#blur)"/>
+<circle cx="256" cy="256" r="196" fill="#0a1030" opacity=".35" filter="url(#sh)"/>
+<circle cx="256" cy="256" r="196" fill="url(#gl)"/>
+<g clip-path="url(#cd)"><ellipse cx="256" cy="120" rx="170" ry="90" fill="url(#hl)" opacity=".7"/><circle cx="256" cy="256" r="196" fill="url(#aur)"/></g>
+<circle cx="256" cy="256" r="195" fill="none" stroke="url(#rim)" stroke-width="4"/>
+<circle cx="256" cy="256" r="186" fill="none" stroke="#fff" stroke-opacity=".12" stroke-width="2"/>
+<path d="M256 96C266 190 322 246 416 256C322 266 266 322 256 416C246 322 190 266 96 256C190 246 246 190 256 96Z" fill="#ffc774" opacity=".75" filter="url(#blur)"/>
+<path d="M256 96C266 190 322 246 416 256C322 266 266 322 256 416C246 322 190 266 96 256C190 246 246 190 256 96Z" fill="url(#st)"/>
+<circle cx="256" cy="256" r="26" fill="#fff" opacity=".95"/><circle cx="256" cy="256" r="40" fill="#fff" opacity=".18"/>
+</svg>
