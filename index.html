@@ -3950,7 +3950,7 @@ document.addEventListener('keydown',e=>{const sv=document.activeElement;if(!sv||
   if(e.key==='+'||e.key==='='){e.preventDefault();zoomBy(sv,1.5,.5,.5)}if(e.key==='-'||e.key==='_'){e.preventDefault();zoomBy(sv,1/1.5,.5,.5)}if(e.key==='0'){e.preventDefault();A.zreset()}});
 /* ===== Neues Konzept: Karte als Fläche, Blatt darüber ===== */
 /* Höhe der App-Fläche: als Home-Bildschirm-App meldet iOS innerHeight manchmal um den oberen Rand zu klein */
-const KP_BUILD='20261117203626';
+const KP_BUILD='20261117204008';
 /* Auto-Update: auf GitHub Pages prüft die App beim Start eine winzige Versionsdatei und lädt bei neuerem Stand die frische Seite (umgeht den 10-Minuten-Zwischenspeicher) */
 (function(){try{if(location.protocol!=='https:'||!/github\.io$/.test(location.hostname)||KP_BUILD==='__BUILD__')return;
   fetch('version.txt?c='+Date.now(),{cache:'no-store'}).then(r=>r.ok?r.text():'').then(v=>{v=(v||'').trim();if(!/^\d{8,}$/.test(v)||v===KP_BUILD||v<KP_BUILD)return;
@@ -5171,7 +5171,7 @@ async function t3Shade(L,es){
         fo=(1-t3ss(.3,.56,sl))*(1-t3ss(.34,.52,t+(n1-.5)*.14))*cm*(.5+.5*t3ss(0,.05,sl))*(1-wf)*(1-ca)*(1-bk*.8)*(RDc?1:.35+.65*t3ss(2300,3600,z)),sp=.5*n2+.5*n3;
       if(es==='natur'){
         const gh=t3ss(.04,.38,t+(n1-.5)*.12);
-        r=.17+.24*gh+.07*n1;g=.43+.05*gh-.04*n1;b=.08+.05*gh;r*=.86+.28*sp;g*=.9+.2*sp;
+        r=.17+.24*gh+.07*n1;g=.43+.05*gh-.04*n1;b=.08+.05*gh;{const pf=t3fbm(x/230+60,z/230+3,2)-.5;r+=pf*.11;g-=pf*.03}r*=.86+.28*sp;g*=.9+.2*sp;
         const fl=.7+.55*n3;r+=(.04*fl-r)*fo;g+=(.15*fl-g)*fo;b+=(.08*fl-b)*fo;
         const rk=clamp(t3ss(.5,.78,t+(n1-.5)*.2)+t3ss(.3,.55,sl+(n2-.5)*.1),0,1),st=.5+.5*Math.sin(h/8+n1*6),wm=.4+.6*n1;
         r+=(.38+.12*wm+.05*st-.06*n2-r)*rk;g+=(.3+.07*wm+.04*st-.05*n2-g)*rk;b+=(.27-.05*wm+.03*st-.04*n2-b)*rk;
@@ -5197,7 +5197,7 @@ async function t3Shade(L,es){
         r+=(.01-r)*fo*.6;g+=(.06-g)*fo*.6;b+=(.3-b)*fo*.6;
         if(ca>0){r+=(.05-r)*ca*.7;g+=(.3-g)*ca*.7;b+=(.7-b)*ca*.7}
         if(wf>0){r+=(.0-r)*wf;g+=(.5-g)*wf;b+=(1-b)*wf}}
-      const gr=(.93+.14*n2)*(es==='natur'||es==='glas'?1-.13*t3ss(.5,.78,t3fbm(x/1000+30,z/800+8,2)):1),am=(.5+.5*ny)*ao;
+      const gr=(.93+.14*n2)*(es==='natur'||es==='glas'?(1-.13*t3ss(.5,.78,t3fbm(x/1000+30,z/800+8,2)))*(1-.15*t3ss(.5,.72,t3fbm(x/1500+40,z/1150+12,2))):1),am=(.5+.5*ny)*ao;
       if(es==='nacht'){const w=dl*dl*.3;r=r*gr*(.5*dl+W.amb[0]*am)+w;g=g*gr*(.55*dl+W.amb[1]*am)+w*.52;b=b*gr*(.8*dl+W.amb[2]*am)+w*.2}
       else{r*=gr*(W.sun[0]*dl+W.amb[0]*am);g*=gr*(W.sun[1]*dl+W.amb[1]*am);b*=gr*(W.sun[2]*dl+W.amb[2]*am)}
       if(es==='blau'){const rim=Math.pow(sl,1.4)*.5;r+=rim*.1;g+=rim*.4;b+=rim*.75}
@@ -5214,7 +5214,7 @@ async function t3Shade(L,es){
 /* Bild zeichnen: Ausschnitt [X0,X1]×[Y0,Y1] in Kartenkoordinaten, s Pixel je Einheit */
 async function t3Draw(L,C,es,X0,Y0,X1,Y1,s){
   const {sc,NC,NK,zs,H,U0,DU}=L,W=T3W[es]||T3W.natur,Wp=Math.round((X1-X0)*s),Hp=Math.round((Y1-Y0)*s),D=new Uint8ClampedArray(Wp*Hp*4),F=sc.F,CAM=sc.CAM,yo=(sc.HOR-Y0)*s,Fs=F*s;
-  const acc=new Float32Array(Hp*3),la=W.la,lr=W.line[0]*255,lg=W.line[1]*255,lb=W.line[2]*255,gridA=W.grid,ci=es==='blau'?60:es==='nacht'?50:80,gs=400;
+  const DN=({natur:.2,nacht:.12,glas:.07})[es]||0,acc=new Float32Array(Hp*3),la=W.la,lr=W.line[0]*255,lg=W.line[1]*255,lb=W.line[2]*255,gridA=W.grid,ci=es==='blau'?60:es==='nacht'?50:80,gs=400;
   /* Himmel */
   const skyR=new Float32Array(Hp),skyG=new Float32Array(Hp),skyB=new Float32Array(Hp),hy=sc.HOR<Y0?Y0+60:sc.HOR;
   for(let r=0;r<Hp;r++){const y=Y0+(r+.5)/s,t=Math.pow(clamp((hy+40-y)/520,0,1),.8),a=W.sky[0],b2=W.sky[1];skyR[r]=255*(b2[0]+(a[0]-b2[0])*t);skyG[r]=255*(b2[1]+(a[1]-b2[1])*t);skyB[r]=255*(b2[2]+(a[2]-b2[2])*t)}
@@ -5226,6 +5226,7 @@ async function t3Draw(L,C,es,X0,Y0,X1,Y1,s){
       if(k===0){if(y<ymin){for(let r=Math.max(0,Math.floor(y));r<Hp;r++){const cv=Math.min(r+1,Hp)-Math.max(r,y);if(cv>0){acc[r*3]+=r1*cv;acc[r*3+1]+=g1*cv;acc[r*3+2]+=b1*cv}}ymin=y}}
       else if(y<ymin&&y<yp){const top=y<0?0:y,span=yp-y,dh=(h-hp)/span,dzp=(z-zp)/span;
         for(let r=Math.floor(top);r<ymin;r++){const lo=r>top?r:top,hi=r+1<ymin?r+1:ymin,cv=hi-lo;if(cv<=0)continue;const yc=(lo+hi)*.5,t=(yp-yc)/span;let rr=r0+(r1-r0)*t,gg=g0+(g1-g0)*t,bb=b0+(b1-b0)*t;
+          if(DN>0){const zz=zp+(z-zp)*t,fa=DN*(1-.8*t3ss(2300,9500,zz));if(fa>.004){const xx=u*zz,rk=clamp((rr-gg*.92)/50+.35,0,1),nz=t3vn(xx/8+31,zz/8+17)*.55+t3vn(xx/2.6+5,zz/2.6+9)*.45-.5,n3=t3vn(xx/34+3,zz/21+8)-.5,m=1+fa*(nz*(1.6+1.2*rk)+n3*1.2*rk);rr*=m;gg*=m*(1+.04*nz);bb*=m*(1-.05*nz)}}
           if(la>0){const hh=hp+(h-hp)*t,al=(a0+(a1-a0)*t)/255;let q=hh/ci;q-=Math.floor(q);const lw=Math.abs(dh)/ci*1.15,e=q<lw?1:(1-q)<lw?1:0;
             if(e>0){const m=la*al*(Math.floor(hh/ci+.5)%5===0?1.5:.8);rr+=(lr-rr)*m;gg+=(lg-gg)*m;bb+=(lb-bb)*m}
             if(gridA>0){const zz=zp+(z-zp)*t,xx=u*zz;let qz=zz/gs;qz-=Math.floor(qz);let qx=xx/gs;qx-=Math.floor(qx);const wz=Math.abs(dzp)/gs*1.2,wx=zz/(Fs*gs)*1.3;if(qz<wz||1-qz<wz||qx<wx||1-qx<wx){const m=gridA*al;rr+=(lr-rr)*m;gg+=(lg-gg)*m;bb+=(lb-bb)*m}}}
