@@ -3950,7 +3950,7 @@ document.addEventListener('keydown',e=>{const sv=document.activeElement;if(!sv||
   if(e.key==='+'||e.key==='='){e.preventDefault();zoomBy(sv,1.5,.5,.5)}if(e.key==='-'||e.key==='_'){e.preventDefault();zoomBy(sv,1/1.5,.5,.5)}if(e.key==='0'){e.preventDefault();A.zreset()}});
 /* ===== Neues Konzept: Karte als Fläche, Blatt darüber ===== */
 /* Höhe der App-Fläche: als Home-Bildschirm-App meldet iOS innerHeight manchmal um den oberen Rand zu klein */
-const KP_BUILD='20261117230600';
+const KP_BUILD='20261117231648';
 /* Auto-Update: auf GitHub Pages prüft die App beim Start eine winzige Versionsdatei und lädt bei neuerem Stand die frische Seite (umgeht den 10-Minuten-Zwischenspeicher) */
 (function(){try{if(location.protocol!=='https:'||!/github\.io$/.test(location.hostname)||KP_BUILD==='__BUILD__')return;
   fetch('version.txt?c='+Date.now(),{cache:'no-store'}).then(r=>r.ok?r.text():'').then(v=>{v=(v||'').trim();if(!/^\d{8,}$/.test(v)||v===KP_BUILD||v<KP_BUILD)return;
@@ -5146,7 +5146,7 @@ async function t3Lat(sc,U0,U1,NC,Z0,Z1,NK){
 const T3W={
  natur:{L:[-.62,.56,-.55],sun:[1.85,1.66,1.3],amb:[.38,.5,.8],fog:[.74,.85,.96],sky:[[.17,.4,.86],[.74,.86,.97]],line:[1,1,1],la:0,grid:0,sh:.85,band:.85,bandw:1,cl:{t0:.5,t1:.74,op:.96,li:[1,.99,.96],sh:[.6,.7,.9]}},
  glas:{L:[-.6,.52,-.6],sun:[1.34,1.3,1.24],amb:[.56,.68,.95],fog:[.83,.90,.985],sky:[[.50,.67,.92],[.86,.92,.985]],line:[1,1,1],la:.1,grid:0,sh:.7,band:.6,bandw:1,cl:{t0:.52,t1:.8,op:.8,li:[1,1,1],sh:[.78,.87,1]}},
- nacht:{L:[.74,.34,-.4],sun:[.98,.56,.27],amb:[.3,.36,.62],fog:[.055,.075,.19],sky:[[.03,.045,.13],[.10,.12,.27]],line:[.55,.66,1],la:.1,grid:0,sh:.9,band:.55,bandw:.9,cl:{t0:.54,t1:.8,op:.5,li:[.36,.4,.64],sh:[.1,.12,.27]}},
+ nacht:{L:[.74,.34,-.4],sun:[.98,.56,.27],amb:[.22,.34,.58],fog:[.04,.08,.17],sky:[[.025,.05,.12],[.07,.13,.25]],line:[.55,.7,.95],la:.1,grid:0,sh:.9,band:.55,bandw:.9,cl:{t0:.54,t1:.8,op:.5,li:[.3,.42,.6],sh:[.07,.13,.24]}},
  blau:{L:[-.55,.6,-.58],sun:[.5,.8,1.25],amb:[.06,.16,.5],fog:[.016,.07,.27],sky:[[.006,.03,.14],[.025,.13,.42]],line:[.42,.8,1],la:.34,grid:.2,sh:.55,band:.3,bandw:1,cl:null}};
 async function t3Shade(L,es){
   const {sc,NC,NK,zs,H,GX,GZ,AO,U0,DU}=L,W=T3W[es]||T3W.natur,C=new Uint8ClampedArray(NC*NK*4);
@@ -5189,8 +5189,8 @@ async function t3Shade(L,es){
         if(bk>0){r+=(.78-r)*bk*.6;g+=(.84-g)*bk*.6;b+=(.88-b)*bk*.6}
         if(wf>0){r+=(.45-r)*wf;g+=(.72-g)*wf;b+=(.93-b)*wf}}
       else if(es==='nacht'){
-        r=.2+.06*t;g=.235+.07*t;b=.42+.1*t;const rk=t3ss(.3,.6,sl)*.5;r+=(.13-r)*rk;g+=(.14-g)*rk;b+=(.27-b)*rk;{const sm=1-(1-(.7+.6*stk))*rk;r*=sm;g*=sm;b*=sm}const sn=t3ss(snowL-.08,snowL+.1,t+(n1-.5)*.16)*(1-t3ss(.36,.6,sl));r+=(.5-r)*sn;g+=(.55-g)*sn;b+=(.8-b)*sn;
-        const fl=.7+.5*n3;r+=(.07*fl-r)*fo;g+=(.1*fl-g)*fo;b+=(.22*fl-b)*fo;
+        r=.13+.05*t;g=.25+.08*t;b=.4+.09*t;const rk=t3ss(.3,.6,sl)*.5;r+=(.12-r)*rk;g+=(.16-g)*rk;b+=(.26-b)*rk;{const sm=1-(1-(.7+.6*stk))*rk;r*=sm;g*=sm;b*=sm}const sn=t3ss(snowL-.08,snowL+.1,t+(n1-.5)*.16)*(1-t3ss(.36,.6,sl));r+=(.55-r)*sn;g+=(.66-g)*sn;b+=(.83-b)*sn;
+        const fl=.7+.5*n3;r+=(.05*fl-r)*fo;g+=(.11*fl-g)*fo;b+=(.2*fl-b)*fo;
         if(ca>0){r+=(.16-r)*ca;g+=(.26-g)*ca;b+=(.34-b)*ca;r+=(.3-r)*tr*.7;g+=(.3-g)*tr*.7;b+=(.32-b)*tr*.7}
         if(wf>0){const sk=t3ss(.7,.9,t3vn(x/10,z/60+3));r+=(.04+.3*sk-r)*wf;g+=(.1+.34*sk-g)*wf;b+=(.3+.36*sk-b)*wf}}
       else{r=.03+.04*t;g=.12+.16*t;b=.42+.26*t;const sn=t3ss(snowL-.1,snowL+.1,t)*(1-t3ss(.36,.6,sl));r+=(.3-r)*sn;g+=(.62-g)*sn;b+=(1-b)*sn;
@@ -5198,7 +5198,7 @@ async function t3Shade(L,es){
         if(ca>0){r+=(.05-r)*ca*.7;g+=(.3-g)*ca*.7;b+=(.7-b)*ca*.7}
         if(wf>0){r+=(.0-r)*wf;g+=(.5-g)*wf;b+=(1-b)*wf}}
       const gr=(.93+.14*n2)*(es==='natur'||es==='glas'?(1-.13*t3ss(.5,.78,t3fbm(x/1000+30,z/800+8,2)))*(1-.15*t3ss(.5,.72,t3fbm(x/1500+40,z/1150+12,2))):1),am=(.5+.5*ny)*ao;
-      if(es==='nacht'){const w=dl*dl*.3;r=r*gr*(.5*dl+W.amb[0]*am)+w;g=g*gr*(.55*dl+W.amb[1]*am)+w*.52;b=b*gr*(.8*dl+W.amb[2]*am)+w*.2}
+      if(es==='nacht'){const w=dl*dl*.26;r=r*gr*(.42*dl+W.amb[0]*am)+w*.55;g=g*gr*(.55*dl+W.amb[1]*am)+w*.72;b=b*gr*(.8*dl+W.amb[2]*am)+w*.86}
       else{r*=gr*(W.sun[0]*dl+W.amb[0]*am);g*=gr*(W.sun[1]*dl+W.amb[1]*am);b*=gr*(W.sun[2]*dl+W.amb[2]*am)}
       if(es==='blau'){const rim=Math.pow(sl,1.4)*.5;r+=rim*.1;g+=rim*.4;b+=rim*.75}
       /* Lagerfeuer wärmt den Boden */
@@ -5272,7 +5272,7 @@ function t3Scatter(L,n,seed,zm){const sc=L.sc,r=rng(seed),out=[],{NC,NK,zs,U0,DU
     if(RV){const v=RV(z);if(v.k>.02&&Math.abs(x-v.x)/v.s<v.w*1.9)continue}
     const q=L.p(x,z,h);out.push({x:q[0],y:q[1],z,t,vis:L.vis(x,z,h+12),sz:(40+r()*38)*(.8+.4*cm)})}
   out.sort((a,b)=>b.z-a.z);return out}
-const T3TC={natur:{b:[.09,.26,.15],l:[.24,.5,.26],sh:.2},glas:{b:[.52,.7,.86],l:[.95,.98,1],sh:.1},nacht:{b:[.04,.08,.19],l:[.15,.25,.46],sh:.3},blau:{b:[.02,.1,.36],l:[.25,.62,.95],sh:.25}};
+const T3TC={natur:{b:[.09,.26,.15],l:[.24,.5,.26],sh:.2},glas:{b:[.52,.7,.86],l:[.95,.98,1],sh:.1},nacht:{b:[.04,.1,.18],l:[.14,.28,.42],sh:.3},blau:{b:[.02,.1,.36],l:[.25,.62,.95],sh:.25}};
 const T3TS=[[0,-1],[.5,-.64],[.24,-.64],[.78,-.32],[.4,-.32],[1,0]];
 function t3Trees(L,es,av){const W=T3W[es]||T3W.natur,TC=T3TC[es]||T3TC.natur,sc=L.sc,F=sc.F,f1=v=>v.toFixed(1),NB=4,bn=[];for(let i=0;i<NB*2;i++)bn.push({s:'',d:'',l:''});
   const hex=a=>'rgb('+a.map(v=>Math.round(clamp(v,0,1)*255)).join(',')+')',mx=(a,b,t)=>a.map((v,i)=>v+(b[i]-v)*t);
@@ -5297,16 +5297,42 @@ function t3Trail(L,pts,dh){const s=pts.map(p=>{const h=L.h(p[0],p[1])+(dh||5),q=
 
 
 /* Gipfelbauten: Zelt (Anfang), Hütte (unterwegs), Hütte mit Rauch und Licht (fast/ganz geschafft); Vision: Gipfelkreuz */
-const T3HP={natur:{w:'#9b7650',w2:'#7b5a3c',r:'#b5503d',r2:'#8e3c2e',s:'#f5f8fb',st:'#8d8a80',win:'#3a3f4a',wl:'#ffd989',sm:'#ffffff',ln:''},nacht:{w:'#51465f',w2:'#3b3347',r:'#7a3f52',r2:'#5a2c3c',s:'#c8d2ee',st:'#46485f',win:'#20243a',wl:'#ffd27a',sm:'#cfd6ee',ln:''},glas:{w:'#dbe7f1',w2:'#b9cde0',r:'#6f9cc4',r2:'#557fa6',s:'#ffffff',st:'#9fb4c8',win:'#6a86a3',wl:'#fff1b8',sm:'#ffffff',ln:''},blau:{w:'#0b4aa0',w2:'#083a80',r:'#1e78e0',r2:'#0f5ec0',s:'#bfeaff',st:'#0a3f86',win:'#06265a',wl:'#eaffff',sm:'#bfeaff',ln:'#9fd0ff'}};
-function t3Hut(x,y,rt,es,gc){const P=T3HP[es]||T3HP.natur,f=v=>v.toFixed(1),ln=P.ln?' stroke="'+P.ln+'" stroke-width=".5" stroke-linejoin="round"':'',k=1.75;
-  let o='<g data-act="goals" transform="translate('+f(x)+' '+f(y)+') scale('+k+')"><ellipse cx="0" cy="1" rx="12" ry="2.8" fill="#000" opacity=".28"/>';
-  if(rt<.2){o+='<path d="M-8.5 0L0-12.5L8.5 0Z" fill="'+gc+'"'+ln+'/><path d="M0-12.5L8.5 0H0Z" fill="#000" opacity=".2"/><path d="M-2 0L0-5.5L2 0Z" fill="'+P.win+'"/><path d="M0-12.5V-18" stroke="'+P.st+'" stroke-width=".9"/><path d="M0-18l4.2 1.4L0-15Z" fill="'+gc+'"/><path d="M-8.5 0H8.5" stroke="'+P.st+'" stroke-width=".8" opacity=".6"/></g>';return o}
+const T3HP={natur:{w:'#a98258',w2:'#7d5d3f',r:'#74594a',r2:'#4a382d',s:'#f4f8fb',st:'#8d897e',win:'#2f3540',wl:'#ffd989',sm:'#ffffff',ln:'',gd:'#6e6a5c'},nacht:{w:'#5b5650',w2:'#403c39',r:'#3b3838',r2:'#232222',s:'#c9d6ea',st:'#4a4e58',win:'#151a26',wl:'#ffd27a',sm:'#c9d6ea',ln:'',gd:'#2a3b52'},glas:{w:'#e4edf5',w2:'#bfd2e3',r:'#7fa7ca',r2:'#557fa6',s:'#ffffff',st:'#9fb4c8',win:'#6a86a3',wl:'#fff1b8',sm:'#ffffff',ln:'',gd:'#b9c9d8'},blau:{w:'#0b4aa0',w2:'#083a80',r:'#1e78e0',r2:'#0f5ec0',s:'#bfeaff',st:'#0a3f86',win:'#06265a',wl:'#eaffff',sm:'#bfeaff',ln:'#9fd0ff',gd:'#0a3f86'}};
+function t3Hut(x,y,rt,es,gc){const P=T3HP[es]||T3HP.natur,ln=P.ln?' stroke="'+P.ln+'" stroke-width=".5" stroke-linejoin="round"':'',k=1.6,pl=es==='blau'?'#9fd0ff':'#000',po=es==='blau'?.45:.22;
+  let o='<g data-act="goals" transform="translate('+x.toFixed(1)+' '+y.toFixed(1)+') scale('+k+')">';
+  /* Standplatz: Schatten + Felsfuß + Steine */
+  o+='<ellipse cx="3" cy="1.2" rx="17" ry="3.6" fill="#000" opacity=".3"/><path d="M-11 1.2Q-9.5-1.6-5-1.2L12-3.6Q17-3.4 16.5 0.6Q10 3.4 0 3.2Q-9 3.4-11 1.2Z" fill="'+P.gd+'" opacity=".9"/><circle cx="-10" cy=".6" r="1.5" fill="'+P.st+'"/><circle cx="15.5" cy="-.8" r="1.7" fill="'+P.st+'"/><circle cx="9" cy="2.2" r="1.1" fill="'+P.st+'" opacity=".8"/>';
+  if(rt<.2){
+    o+='<path d="M0-10L7 0L13-3L7-13Z" fill="'+gc+'"'+ln+'/><path d="M0-10L7 0L13-3L7-13Z" fill="#fff" opacity=".16"/><path d="M-6 0L0-10L7 0Z" fill="'+gc+'"'+ln+'/><path d="M-6 0L0-10L7 0Z" fill="#000" opacity=".26"/><path d="M-1.7 0L.4-5.6L2.3 0Z" fill="'+P.win+'"/><path d="M0-10V-17" stroke="'+P.st+'" stroke-width=".8"/><path d="M0-17l4.6 1.5L0-14Z" fill="'+gc+'"/><path d="M7-13L15-2M-6 0L-9 2" stroke="'+P.st+'" stroke-width=".45" opacity=".8"/><path d="M-6 0H7" stroke="'+pl+'" stroke-width=".5" opacity="'+po+'"/></g>';return o}
   const lit=rt>=.5||(es==='nacht'&&rt>0);
-  o+='<rect x="-7" y="-8" width="14" height="8" fill="'+P.w+'"'+ln+'/><rect x="0" y="-8" width="7" height="8" fill="'+P.w2+'"/><rect x="-7.6" y="-1.8" width="15.2" height="1.8" fill="'+P.st+'"/>'+
-    '<path d="M-9.5-7.2L0-16.5L9.5-7.2Z" fill="'+P.r+'"'+ln+'/><path d="M0-16.5L9.5-7.2H0Z" fill="'+P.r2+'"/><path d="M-9.5-7.2L0-16.5L9.5-7.2L7.7-7.2L0-14.2L-7.7-7.2Z" fill="'+P.s+'" opacity=".92"/>'+
-    '<rect x="-1.7" y="-5.2" width="3.4" height="5.2" fill="'+P.win+'"/>'+(lit?'<circle cx="4.5" cy="-5.3" r="4.2" fill="'+P.wl+'" opacity=".28"/>':'')+'<rect x="3.2" y="-6.6" width="2.6" height="2.6" fill="'+(lit?P.wl:P.win)+'"/><rect x="-5.4" y="-16" width="2.2" height="5" fill="'+P.st+'"/>';
-  if(rt>=.5)o+='<circle cx="-4.3" cy="-18.5" r="1.7" fill="'+P.sm+'" opacity=".55"/><circle cx="-3.2" cy="-22" r="2.4" fill="'+P.sm+'" opacity=".36"/><circle cx="-1.2" cy="-26.2" r="3.1" fill="'+P.sm+'" opacity=".2"/>';
+  /* Seitenwand */
+  o+='<path d="M6 0L13-3V-11L6-8Z" fill="'+P.w2+'"'+ln+'/><path d="M6-2.7L13-5.7M6-5.4L13-8.4" stroke="'+pl+'" stroke-width=".4" opacity="'+po+'"/>';
+  /* Frontwand + Giebel */
+  o+='<path d="M-8-8L-1-14.5L6-8V0H-8Z" fill="'+P.w+'"'+ln+'/><path d="M-6.5 0V-8M-1.2 0V-14M0 0V-14M4.6 0V-8" stroke="'+pl+'" stroke-width=".4" opacity="'+po+'"/>';
+  /* Fundament */
+  o+='<path d="M-8.4 0V-1.9H6.4V0Z" fill="'+P.st+'"/><path d="M6.4 0L13.3-2.9V-4.7L6.4-1.9Z" fill="'+P.st+'"/><path d="M6.4 0L13.3-2.9V-4.7L6.4-1.9Z" fill="#000" opacity=".2"/>';
+  /* Tür, Fenster, Läden */
+  o+='<rect x="-5.6" y="-5.6" width="3.1" height="5.6" fill="'+P.win+'"/><rect x="-5.6" y="-5.6" width="3.1" height="5.6" fill="none" stroke="'+P.r2+'" stroke-width=".4"/>';
+  if(lit)o+='<circle cx="2.6" cy="-4.6" r="4.6" fill="'+P.wl+'" opacity=".3"/>';
+  o+='<rect x="1" y="-6.1" width="3.2" height="3" fill="'+(lit?P.wl:P.win)+'"/><path d="M2.6-6.1V-3.1M1-4.6H4.2" stroke="'+P.r2+'" stroke-width=".4"/><rect x=".1" y="-6.1" width=".8" height="3" fill="'+gc+'"/><rect x="4.3" y="-6.1" width=".8" height="3" fill="'+gc+'"/>';
+  /* Dach (rechte Fläche) + Giebelkante */
+  o+='<path d="M-1-14.5L6-17.5L13.8-11L6.8-8Z" fill="'+P.r+'"'+ln+'/><path d="M-1-14.5L6-17.5L13.8-11L6.8-8Z" fill="#000" opacity=".12"/><path d="M1.2-12.6L8.2-15.6M3.4-10.7L10.4-13.7" stroke="'+pl+'" stroke-width=".4" opacity="'+po+'"/>';
+  o+='<path d="M-1-14.5L6-17.5L11-13.4Q9.5-12.2 8.4-13.1Q7-11.8 5.4-12.8Q3.8-11.2 2.6-12.1Q1.2-10.9-.2-11.6Z" fill="'+P.s+'" opacity=".95"/>';
+  o+='<path d="M-8.8-7.6L-1-14.5L6.8-7.6" fill="none" stroke="'+P.r2+'" stroke-width="1.1" stroke-linejoin="round"/><path d="M-8.4-8.1L-1-14.6L1-12.8" fill="none" stroke="'+P.s+'" stroke-width=".9" stroke-linecap="round"/>';
+  /* Schornstein */
+  o+='<path d="M2.3-15.8V-20.8H4.9V-16.6Z" fill="'+P.st+'"'+ln+'/><path d="M2-20.8H5.2" stroke="'+P.r2+'" stroke-width=".9"/><path d="M3.6-20.8H4.9V-16.6L3.6-16.1Z" fill="#000" opacity=".2"/>';
+  if(rt>=.5)o+='<circle cx="3.8" cy="-23" r="1.6" fill="'+P.sm+'" opacity=".55"/><circle cx="4.9" cy="-26.3" r="2.3" fill="'+P.sm+'" opacity=".36"/><circle cx="6.6" cy="-30" r="3" fill="'+P.sm+'" opacity=".2"/>';
+  /* Wimpel */
+  o+='<path d="M-1-14.5V-20.5" stroke="'+P.st+'" stroke-width=".6"/><path d="M-1-20.5l4 1.3L-1-17.7Z" fill="'+gc+'"/>';
   return o+'</g>'}
+function t3HutSpot(L,w,p){let best=null;
+  for(const R of [50,80,110,140,170])for(let i=0;i<18;i++){const a=i/18*6.2832,x=w.x+Math.cos(a)*R,z=w.z+Math.sin(a)*R;
+    if(z<L.Z0||z>L.Z1)continue;const h=L.h(x,z),q=L.p(x,z,h),dx=q[0]-p[0],dy=q[1]-p[1];
+    if(Math.abs(dx)<27||Math.abs(dx)>64||dy<-10||dy>7)continue;
+    if(!L.vis(x,z,h+6))continue;
+    const sl=Math.abs(L.h(x+9,z)-L.h(x-9,z))+Math.abs(L.h(x,z+9)-L.h(x,z-9)),c=sl*2.2+(w.h-h)*.04+(dx<0?4:0)+Math.abs(dy+1)*.5;
+    if(!best||c<best.c)best={c,q}}
+  return best?best.q:[p[0]+28,p[1]+2]}
 function t3Kreuz(x,y,es){const P=T3HP[es]||T3HP.natur,f=v=>v.toFixed(1),wd=es==='nacht'?'#a98d6b':es==='blau'?'#9fd0ff':'#6a4a2e';
   return '<g transform="translate('+f(x)+' '+f(y)+')"><ellipse cx="0" cy="1" rx="7" ry="1.8" fill="#000" opacity=".28"/><path d="M-4.5 0Q-3.5-3.2 0-3.4Q3.5-3.2 4.5 0Z" fill="'+P.st+'"/><rect x="-.9" y="-19" width="1.8" height="16" fill="'+wd+'"/><rect x="-4.2" y="-15.6" width="8.4" height="1.7" fill="'+wd+'"/></g>'}
 /* ===== Landschaft: Details als Vektor-Ebene (Fluss, Gras, Blumen, Steine) ===== */
@@ -5442,7 +5468,7 @@ function mapSVG3D(st){
   o+='<g data-act="vision">'+t3Kreuz(vx+14,V[1]+2,es)+'<path d="M'+f1(vx)+' '+f1(vy+26)+'V'+f1(V[1])+'" stroke="var(--text)" stroke-width="2.2" stroke-linecap="round"/><circle cx="'+f1(vx)+'" cy="'+f1(V[1])+'" r="3" fill="var(--text)"/><circle cx="'+f1(vx)+'" cy="'+f1(vy)+'" r="26" fill="var(--panel)" fill-opacity=".96" stroke="var(--text)" stroke-width="2.4"/>'+(allOk?'<circle cx="'+f1(vx)+'" cy="'+f1(vy)+'" r="34" fill="none" stroke="var(--conqc)" stroke-width="3" opacity=".6"/>':'')+'<path d="M'+f1(vx-9)+' '+f1(vy+10)+'L'+f1(vx)+' '+f1(vy-9)+'L'+f1(vx+9)+' '+f1(vy+10)+'Z" fill="var(--text)"/><path d="M'+f1(vx)+' '+f1(vy-9)+'V'+f1(vy-22)+'L'+f1(vx+12)+' '+f1(vy-17.5)+'L'+f1(vx)+' '+f1(vy-13)+'" fill="var(--text)"/>'+plaque(vx+34,vy-12,pw(vt,12.5)+16,24,'<text x="'+f1(vx+42)+'" y="'+f1(vy+4.5)+'" font-size="12.5" font-weight="700" fill="var(--text)">'+vt+'</text>')+'</g>';
   /* Ziele auf ihren Gipfeln */
   gs.forEach(g=>{const p=P[g.id];if(!p)return;const rt=ratio(g),Cc=2*Math.PI*21,gc=gcG(g),x=p[0],y=p[1]-32;
-    o+=t3Hut(x+27,p[1]+3,rt,es,gc);
+    const hq=t3HutSpot(L,GW[g.id],p);o+=t3Hut(hq[0],hq[1],rt,es,gc);
     if(rt>=1)o+='<circle cx="'+f1(x)+'" cy="'+f1(y)+'" r="46" fill="'+gc+'" opacity=".2" style="filter:blur(10px)"/>';
     o+='<g data-act="goals"><path d="M'+f1(x)+' '+f1(y+21)+'V'+f1(p[1])+'" stroke="'+gc+'" stroke-width="2.2" stroke-linecap="round"/><circle cx="'+f1(x)+'" cy="'+f1(p[1])+'" r="3" fill="'+gc+'" stroke="var(--panel)" stroke-width="1.2"/><circle cx="'+f1(x)+'" cy="'+f1(y)+'" r="21" fill="var(--panel)" stroke="var(--line2)" stroke-width="1"/><circle cx="'+f1(x)+'" cy="'+f1(y)+'" r="21" fill="none" stroke="var(--panel2)" stroke-width="5"/><circle cx="'+f1(x)+'" cy="'+f1(y)+'" r="21" fill="none" stroke="'+gc+'" stroke-width="5" stroke-linecap="round" stroke-dasharray="'+(rt*Cc).toFixed(1)+' '+Cc.toFixed(1)+'" transform="rotate(-90 '+f1(x)+' '+f1(y)+')"/><path d="M'+f1(x-9)+' '+f1(y+7)+'L'+f1(x)+' '+f1(y-9)+'L'+f1(x+9)+' '+f1(y+7)+'Z" fill="'+gc+'"/></g>';
     if(rt>=1)o+='<path d="M'+f1(x)+' '+f1(y-9)+'V'+f1(y-30)+'L'+f1(x+13)+' '+f1(y-24)+'L'+f1(x)+' '+f1(y-18)+'" fill="'+gc+'"/>';
