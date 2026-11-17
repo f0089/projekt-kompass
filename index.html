@@ -3950,7 +3950,7 @@ document.addEventListener('keydown',e=>{const sv=document.activeElement;if(!sv||
   if(e.key==='+'||e.key==='='){e.preventDefault();zoomBy(sv,1.5,.5,.5)}if(e.key==='-'||e.key==='_'){e.preventDefault();zoomBy(sv,1/1.5,.5,.5)}if(e.key==='0'){e.preventDefault();A.zreset()}});
 /* ===== Neues Konzept: Karte als Fläche, Blatt darüber ===== */
 /* Höhe der App-Fläche: als Home-Bildschirm-App meldet iOS innerHeight manchmal um den oberen Rand zu klein */
-const KP_BUILD='20261117204008';
+const KP_BUILD='20261117230600';
 /* Auto-Update: auf GitHub Pages prüft die App beim Start eine winzige Versionsdatei und lädt bei neuerem Stand die frische Seite (umgeht den 10-Minuten-Zwischenspeicher) */
 (function(){try{if(location.protocol!=='https:'||!/github\.io$/.test(location.hostname)||KP_BUILD==='__BUILD__')return;
   fetch('version.txt?c='+Date.now(),{cache:'no-store'}).then(r=>r.ok?r.text():'').then(v=>{v=(v||'').trim();if(!/^\d{8,}$/.test(v)||v===KP_BUILD||v<KP_BUILD)return;
@@ -5295,6 +5295,20 @@ function t3Trail(L,pts,dh){const s=pts.map(p=>{const h=L.h(p[0],p[1])+(dh||5),q=
   const path=(a,b)=>{const fa=fi(a),fb=fi(b);let d='',on=0;const add=(q,v)=>{if(v){d+=(on?'L':'M')+f1(q[0])+' '+f1(q[1]);on=1}else on=0};add(at(fa),s[Math.round(fa)][2]);for(let i=Math.floor(fa)+1;i<fb;i++)add(s[i],s[i][2]);add(at(fb),s[Math.round(fb)][2]);return d};
   return {pt,path,s}}
 
+
+/* Gipfelbauten: Zelt (Anfang), Hütte (unterwegs), Hütte mit Rauch und Licht (fast/ganz geschafft); Vision: Gipfelkreuz */
+const T3HP={natur:{w:'#9b7650',w2:'#7b5a3c',r:'#b5503d',r2:'#8e3c2e',s:'#f5f8fb',st:'#8d8a80',win:'#3a3f4a',wl:'#ffd989',sm:'#ffffff',ln:''},nacht:{w:'#51465f',w2:'#3b3347',r:'#7a3f52',r2:'#5a2c3c',s:'#c8d2ee',st:'#46485f',win:'#20243a',wl:'#ffd27a',sm:'#cfd6ee',ln:''},glas:{w:'#dbe7f1',w2:'#b9cde0',r:'#6f9cc4',r2:'#557fa6',s:'#ffffff',st:'#9fb4c8',win:'#6a86a3',wl:'#fff1b8',sm:'#ffffff',ln:''},blau:{w:'#0b4aa0',w2:'#083a80',r:'#1e78e0',r2:'#0f5ec0',s:'#bfeaff',st:'#0a3f86',win:'#06265a',wl:'#eaffff',sm:'#bfeaff',ln:'#9fd0ff'}};
+function t3Hut(x,y,rt,es,gc){const P=T3HP[es]||T3HP.natur,f=v=>v.toFixed(1),ln=P.ln?' stroke="'+P.ln+'" stroke-width=".5" stroke-linejoin="round"':'',k=1.75;
+  let o='<g data-act="goals" transform="translate('+f(x)+' '+f(y)+') scale('+k+')"><ellipse cx="0" cy="1" rx="12" ry="2.8" fill="#000" opacity=".28"/>';
+  if(rt<.2){o+='<path d="M-8.5 0L0-12.5L8.5 0Z" fill="'+gc+'"'+ln+'/><path d="M0-12.5L8.5 0H0Z" fill="#000" opacity=".2"/><path d="M-2 0L0-5.5L2 0Z" fill="'+P.win+'"/><path d="M0-12.5V-18" stroke="'+P.st+'" stroke-width=".9"/><path d="M0-18l4.2 1.4L0-15Z" fill="'+gc+'"/><path d="M-8.5 0H8.5" stroke="'+P.st+'" stroke-width=".8" opacity=".6"/></g>';return o}
+  const lit=rt>=.5||(es==='nacht'&&rt>0);
+  o+='<rect x="-7" y="-8" width="14" height="8" fill="'+P.w+'"'+ln+'/><rect x="0" y="-8" width="7" height="8" fill="'+P.w2+'"/><rect x="-7.6" y="-1.8" width="15.2" height="1.8" fill="'+P.st+'"/>'+
+    '<path d="M-9.5-7.2L0-16.5L9.5-7.2Z" fill="'+P.r+'"'+ln+'/><path d="M0-16.5L9.5-7.2H0Z" fill="'+P.r2+'"/><path d="M-9.5-7.2L0-16.5L9.5-7.2L7.7-7.2L0-14.2L-7.7-7.2Z" fill="'+P.s+'" opacity=".92"/>'+
+    '<rect x="-1.7" y="-5.2" width="3.4" height="5.2" fill="'+P.win+'"/>'+(lit?'<circle cx="4.5" cy="-5.3" r="4.2" fill="'+P.wl+'" opacity=".28"/>':'')+'<rect x="3.2" y="-6.6" width="2.6" height="2.6" fill="'+(lit?P.wl:P.win)+'"/><rect x="-5.4" y="-16" width="2.2" height="5" fill="'+P.st+'"/>';
+  if(rt>=.5)o+='<circle cx="-4.3" cy="-18.5" r="1.7" fill="'+P.sm+'" opacity=".55"/><circle cx="-3.2" cy="-22" r="2.4" fill="'+P.sm+'" opacity=".36"/><circle cx="-1.2" cy="-26.2" r="3.1" fill="'+P.sm+'" opacity=".2"/>';
+  return o+'</g>'}
+function t3Kreuz(x,y,es){const P=T3HP[es]||T3HP.natur,f=v=>v.toFixed(1),wd=es==='nacht'?'#a98d6b':es==='blau'?'#9fd0ff':'#6a4a2e';
+  return '<g transform="translate('+f(x)+' '+f(y)+')"><ellipse cx="0" cy="1" rx="7" ry="1.8" fill="#000" opacity=".28"/><path d="M-4.5 0Q-3.5-3.2 0-3.4Q3.5-3.2 4.5 0Z" fill="'+P.st+'"/><rect x="-.9" y="-19" width="1.8" height="16" fill="'+wd+'"/><rect x="-4.2" y="-15.6" width="8.4" height="1.7" fill="'+wd+'"/></g>'}
 /* ===== Landschaft: Details als Vektor-Ebene (Fluss, Gras, Blumen, Steine) ===== */
 const T3RV={natur:{bank:'#bdb59f',wet:'#6a6a50',c:['#a9cdb9','#86bdb1','#66a9a8','#4f9397','#418088'],sky:'#d6ebf7',foam:'#ffffff',gl:'#ffffff',rock:['#6f6b60','#a29d8e','#3c3a33'],reed:'#58853a',o:1},
   glas:{bank:'#dfe8f1',wet:'#9fb8d0',c:['#b7dcef','#8dc4e6','#6aaedb','#4f98c9','#3f86ba'],sky:'#ffffff',foam:'#ffffff',gl:'#ffffff',rock:['#8aa0b6','#c3d3e2','#5d7590'],reed:'#9cbcce',o:1},
@@ -5425,9 +5439,10 @@ function mapSVG3D(st){
   o+=mk;
   /* Vision am Hauptgipfel */
   const allOk=S.goals.length>0&&S.goals.every(g=>g.ok),vx=V[0],vy=V[1]-46,vt='Vision '+S.vision.year;
-  o+='<g data-act="vision"><path d="M'+f1(vx)+' '+f1(vy+26)+'V'+f1(V[1])+'" stroke="var(--text)" stroke-width="2.2" stroke-linecap="round"/><circle cx="'+f1(vx)+'" cy="'+f1(V[1])+'" r="3" fill="var(--text)"/><circle cx="'+f1(vx)+'" cy="'+f1(vy)+'" r="26" fill="var(--panel)" fill-opacity=".96" stroke="var(--text)" stroke-width="2.4"/>'+(allOk?'<circle cx="'+f1(vx)+'" cy="'+f1(vy)+'" r="34" fill="none" stroke="var(--conqc)" stroke-width="3" opacity=".6"/>':'')+'<path d="M'+f1(vx-9)+' '+f1(vy+10)+'L'+f1(vx)+' '+f1(vy-9)+'L'+f1(vx+9)+' '+f1(vy+10)+'Z" fill="var(--text)"/><path d="M'+f1(vx)+' '+f1(vy-9)+'V'+f1(vy-22)+'L'+f1(vx+12)+' '+f1(vy-17.5)+'L'+f1(vx)+' '+f1(vy-13)+'" fill="var(--text)"/>'+plaque(vx+34,vy-12,pw(vt,12.5)+16,24,'<text x="'+f1(vx+42)+'" y="'+f1(vy+4.5)+'" font-size="12.5" font-weight="700" fill="var(--text)">'+vt+'</text>')+'</g>';
+  o+='<g data-act="vision">'+t3Kreuz(vx+14,V[1]+2,es)+'<path d="M'+f1(vx)+' '+f1(vy+26)+'V'+f1(V[1])+'" stroke="var(--text)" stroke-width="2.2" stroke-linecap="round"/><circle cx="'+f1(vx)+'" cy="'+f1(V[1])+'" r="3" fill="var(--text)"/><circle cx="'+f1(vx)+'" cy="'+f1(vy)+'" r="26" fill="var(--panel)" fill-opacity=".96" stroke="var(--text)" stroke-width="2.4"/>'+(allOk?'<circle cx="'+f1(vx)+'" cy="'+f1(vy)+'" r="34" fill="none" stroke="var(--conqc)" stroke-width="3" opacity=".6"/>':'')+'<path d="M'+f1(vx-9)+' '+f1(vy+10)+'L'+f1(vx)+' '+f1(vy-9)+'L'+f1(vx+9)+' '+f1(vy+10)+'Z" fill="var(--text)"/><path d="M'+f1(vx)+' '+f1(vy-9)+'V'+f1(vy-22)+'L'+f1(vx+12)+' '+f1(vy-17.5)+'L'+f1(vx)+' '+f1(vy-13)+'" fill="var(--text)"/>'+plaque(vx+34,vy-12,pw(vt,12.5)+16,24,'<text x="'+f1(vx+42)+'" y="'+f1(vy+4.5)+'" font-size="12.5" font-weight="700" fill="var(--text)">'+vt+'</text>')+'</g>';
   /* Ziele auf ihren Gipfeln */
   gs.forEach(g=>{const p=P[g.id];if(!p)return;const rt=ratio(g),Cc=2*Math.PI*21,gc=gcG(g),x=p[0],y=p[1]-32;
+    o+=t3Hut(x+27,p[1]+3,rt,es,gc);
     if(rt>=1)o+='<circle cx="'+f1(x)+'" cy="'+f1(y)+'" r="46" fill="'+gc+'" opacity=".2" style="filter:blur(10px)"/>';
     o+='<g data-act="goals"><path d="M'+f1(x)+' '+f1(y+21)+'V'+f1(p[1])+'" stroke="'+gc+'" stroke-width="2.2" stroke-linecap="round"/><circle cx="'+f1(x)+'" cy="'+f1(p[1])+'" r="3" fill="'+gc+'" stroke="var(--panel)" stroke-width="1.2"/><circle cx="'+f1(x)+'" cy="'+f1(y)+'" r="21" fill="var(--panel)" stroke="var(--line2)" stroke-width="1"/><circle cx="'+f1(x)+'" cy="'+f1(y)+'" r="21" fill="none" stroke="var(--panel2)" stroke-width="5"/><circle cx="'+f1(x)+'" cy="'+f1(y)+'" r="21" fill="none" stroke="'+gc+'" stroke-width="5" stroke-linecap="round" stroke-dasharray="'+(rt*Cc).toFixed(1)+' '+Cc.toFixed(1)+'" transform="rotate(-90 '+f1(x)+' '+f1(y)+')"/><path d="M'+f1(x-9)+' '+f1(y+7)+'L'+f1(x)+' '+f1(y-9)+'L'+f1(x+9)+' '+f1(y+7)+'Z" fill="'+gc+'"/></g>';
     if(rt>=1)o+='<path d="M'+f1(x)+' '+f1(y-9)+'V'+f1(y-30)+'L'+f1(x+13)+' '+f1(y-24)+'L'+f1(x)+' '+f1(y-18)+'" fill="'+gc+'"/>';
