@@ -22,7 +22,7 @@
   --bg:#080b11;--bg2:#0b0f16;--panel:#0e131b;--panel2:#131a24;--line:#1f2733;--line2:#2a3444;
   --text:#f1f4f9;--mute:#8791a3;--dim:#566073;--acc:#ff8c3c;--accsoft:rgba(255,140,60,.13);--accink:#1c0e03;
   --warn:#f1c232;--away:#c08a5a;--contour:rgba(150,172,205,.085);--fog:rgba(140,155,185,.2);--peak:#e6ebf7;--glow:.6;
-  box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+  box-sizing:border-box;
 }
 :root[data-theme="hell"]{color-scheme:light;--bg:#eef1f5;--bg2:#e6eaf0;--panel:#fff;--panel2:#f3f5f9;--line:#d6dce6;--line2:#c3cbd8;--text:#131a25;--mute:#5a6578;--dim:#8b94a5;--accink:#fff;--contour:rgba(70,90,120,.2);--fog:rgba(90,105,135,.18);--peak:#2b364f;--away:#a06c3d;--warn:#b7860a;--glow:.35}
 :root[data-theme="nacht"]{--bg:#07101f;--bg2:#0a1528;--panel:#0d1a30;--panel2:#12223e;--line:#1c3050;--line2:#294468;--text:#e6efff;--mute:#8aa2c8;--dim:#5a7399;--contour:rgba(120,160,215,.2);--fog:rgba(120,155,210,.22)}
@@ -818,6 +818,10 @@ body.skon .cosmos .glb,body.skon .cosmos .planet{visibility:hidden!important}
 .stage.side-off .sidetab{left:91px}.stage.side-off .sidetab svg{transform:rotate(180deg)}}
 @media (prefers-reduced-motion:reduce){.sheet,.sidetab,.sidetab svg{transition:none!important}}
 .syn{display:none;width:9px;height:9px;border-radius:50%;margin-right:4px;flex:none;background:var(--dim);align-self:center}.syn[data-st=on]{display:inline-block;background:#22a559}.syn[data-st=sync],.syn[data-st=connecting],.syn[data-st=ro]{display:inline-block;background:#e0a000}.syn[data-st=err]{display:inline-block;background:#d4553a}
+
+/* Vollbild als Home-Bildschirm-App: kein Rand oben/unten, Statusleiste bekommt einen sanften Schleier */
+html,body{background:var(--bg)}
+@media (display-mode:standalone){body::before{content:"";position:fixed;left:0;right:0;top:0;height:calc(env(safe-area-inset-top,0px) + 10px);background:linear-gradient(rgba(0,0,0,.34),rgba(0,0,0,0));pointer-events:none;z-index:300}}
 </style>
 </head>
 <body>
