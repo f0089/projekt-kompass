@@ -2992,6 +2992,22 @@ svg .cont{stroke:var(--contour);opacity:.55}svg .cont2{stroke:var(--contour2);op
 .pulse{transform-box:fill-box;transform-origin:center;animation:pulse 2.4s ease-out infinite}
 @keyframes pulse{0%{transform:scale(1);opacity:.4}100%{transform:scale(3.4);opacity:0}}
 @media (prefers-reduced-motion:reduce){.pulse{animation:none;opacity:.2}}
+.pastg .pseg{stroke-dasharray:1;stroke-dashoffset:0}
+.pastg.pin .pseg{animation:pdraw .6s cubic-bezier(.35,.7,.3,1) both}
+.pastg.pin .pdash{animation:pfade .6s ease .5s both}
+@keyframes pdraw{from{stroke-dashoffset:-1;opacity:.15}to{stroke-dashoffset:0;opacity:1}}
+.pastg .pcairn{transform-box:fill-box;transform-origin:50% 100%}
+.pastg.pin .pcairn{animation:ppop .5s cubic-bezier(.3,1.6,.5,1) both}
+@keyframes ppop{from{transform:scale(0);opacity:0}to{transform:scale(1);opacity:1}}
+.pastg.pin .pplq{animation:pfade .45s ease both}
+@keyframes pfade{from{opacity:0}to{opacity:1}}
+.pastg.pout{opacity:0;transition:opacity .36s ease}
+.ptog.on{color:var(--text);box-shadow:inset 0 0 0 1.5px color-mix(in srgb,var(--text) 55%,transparent)}
+.ptog:not(.on){opacity:.72}
+.rvf{animation:rvflow 6s linear infinite}
+@keyframes rvflow{to{stroke-dashoffset:-60}}
+@media (prefers-reduced-motion:reduce){.pastg.pin *,.rvf{animation:none!important}}
+
 @media (max-width:999px){.mtop .srch{display:none}}
 
 .msmenu{position:absolute;right:70px;top:18px;z-index:6;width:min(430px,calc(100% - 100px));background:var(--glass);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);border:1px solid var(--line);border-radius:18px;padding:14px 14px 12px;box-shadow:0 20px 50px -14px rgba(20,30,15,.4)}
@@ -3766,10 +3782,13 @@ A.mode=d=>{ui.mode=d.v;renderMain()};
 A.route=(d,el,e)=>{e.preventDefault();open({type:'route',id:d.id})};
 A.wins=()=>open({type:'wins'});
 A.vision=()=>open({type:'vision'});
-A.past=()=>{ui.pd={};open({type:'past'})};
+A.past=()=>{if(S.pastOn===false){S.pastOn=true;save();renderMain()}ui.pd={};open({type:'past'})};
+A.pasttog=()=>{if(ui.pastBusy)return;ui.pastBusy=true;const on=S.pastOn===false,n=(S.past||[]).length,old=(S.past||[]).slice().sort((a,b)=>a.at-b.at)[0];
+  if(on){S.pastOn=true;ui.pastAnim='in';save();renderMain();setTimeout(()=>{ui.pastAnim=null;ui.pastBusy=false},1800);toast(n?'Rückblick an: '+n+(n===1?' Schritt':' Schritte')+' seit '+fd(old.at,{month:'long',year:'numeric'}):'Rückblick an. Tippe auf den Weg, um den ersten Schritt einzutragen.')}
+  else{document.querySelectorAll('.pastg').forEach(e=>e.classList.add('pout'));setTimeout(()=>{S.pastOn=false;save();renderMain();ui.pastBusy=false;toast('Rückblick aus')},380)}};
 A.pastnew=()=>{ui.pd={};open({type:'past'},true)};
 A.pastedit=d=>{ui.pd={id:d.id};if(ui.cur&&ui.cur.type==='past')open({type:'past'},true);else open({type:'past'})};
-A.pastsave=()=>{const f=$('#pastT'),t=f.value.trim();if(!t){f.focus();return}const dv=$('#pastD').value,at=dv?new Date(dv+'T12:00:00').getTime():Date.now(),note=$('#pastN').value.trim(),e=ui.pd||{};S.past=S.past||[];const x=e.id&&S.past.find(i=>i.id===e.id);if(x){x.t=t;x.at=at;x.note=note}else S.past.push({id:uid(),t,at,note});ui.pd={};save();open({type:'past'},true);renderMain();toast(x?'Gespeichert.':'Auf dem Pfad eingetragen.')};
+A.pastsave=()=>{const f=$('#pastT'),t=f.value.trim();if(!t){f.focus();return}const dv=$('#pastD').value,at=dv?new Date(dv+'T12:00:00').getTime():Date.now(),note=$('#pastN').value.trim(),e=ui.pd||{};S.past=S.past||[];const x=e.id&&S.past.find(i=>i.id===e.id);if(x){x.t=t;x.at=at;x.note=note}else S.past.push({id:uid(),t,at,note});S.pastOn=true;ui.pd={};save();open({type:'past'},true);renderMain();toast(x?'Gespeichert.':'Auf dem Pfad eingetragen.')};
 A.pastdel=d=>{S.past=(S.past||[]).filter(x=>x.id!==d.id);ui.pd={};save();open({type:'past'},true);renderMain();toast('Schritt entfernt.')};
 
 
@@ -3934,7 +3953,7 @@ document.addEventListener('keydown',e=>{const sv=document.activeElement;if(!sv||
   if(e.key==='+'||e.key==='='){e.preventDefault();zoomBy(sv,1.5,.5,.5)}if(e.key==='-'||e.key==='_'){e.preventDefault();zoomBy(sv,1/1.5,.5,.5)}if(e.key==='0'){e.preventDefault();A.zreset()}});
 /* ===== Neues Konzept: Karte als Fläche, Blatt darüber ===== */
 /* Höhe der App-Fläche: als Home-Bildschirm-App meldet iOS innerHeight manchmal um den oberen Rand zu klein */
-const KP_BUILD='20261117200902';
+const KP_BUILD='20261117202129';
 /* Auto-Update: auf GitHub Pages prüft die App beim Start eine winzige Versionsdatei und lädt bei neuerem Stand die frische Seite (umgeht den 10-Minuten-Zwischenspeicher) */
 (function(){try{if(location.protocol!=='https:'||!/github\.io$/.test(location.hostname)||KP_BUILD==='__BUILD__')return;
   fetch('version.txt?c='+Date.now(),{cache:'no-store'}).then(r=>r.ok?r.text():'').then(v=>{v=(v||'').trim();if(!/^\d{8,}$/.test(v)||v===KP_BUILD||v<KP_BUILD)return;
@@ -4165,7 +4184,7 @@ function ideenTab(){
 function mapStage(){
   const lage=S.mapMode==='lage',empty=!S.goals.length&&!S.routes.length;
   let h='<div class="mapbox">'+(empty?'<div class="mapempty">Deine Karte zeichnet sich von selbst.<br>Lege 2 bis 4 Ziele an, dann erste Routen.<br><br><button class="btn pri" data-act="quarter">Ziele festlegen</button></div>':(lage?lageSVG():mapSVG()))+'</div>';
-  h+='<div class="mtop"><div class="seg"><button class="'+(!lage?'on':'')+'" data-act="mapmode" data-v="richtung">Richtung</button><button class="'+(lage?'on':'')+'" data-act="mapmode" data-v="lage">Lage</button></div>'+(lage?lageSearch():'')+'</div>'+starBtn()+'<div class="mright"><button class="ib" data-act="leg" aria-label="Legende">i</button><button class="ib" data-act="msopen" aria-label="Ansicht und Kartendesign" title="Ansicht und Kartendesign"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"><path d="M12 3L3 8l9 5 9-5z"/><path d="M3 13l9 5 9-5"/></svg></button></div>';
+  h+='<div class="mtop"><div class="seg"><button class="'+(!lage?'on':'')+'" data-act="mapmode" data-v="richtung">Richtung</button><button class="'+(lage?'on':'')+'" data-act="mapmode" data-v="lage">Lage</button></div>'+(lage?lageSearch():'')+'</div>'+starBtn()+'<div class="mright"><button class="ib" data-act="leg" aria-label="Legende">i</button>'+(lage?'':'<button class="ib ptog'+(S.pastOn===false?'':' on')+'" data-act="pasttog" aria-pressed="'+(S.pastOn!==false)+'" aria-label="Rückblick ein- oder ausblenden" title="Rückblick: dein Weg bis heute"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20c4 0 4-4 8-4s3-4 7-5" stroke-dasharray="0.1 3.2"/><path d="M19 3.5v7"/><path d="M19 4l3.4 1.6L19 7.2z" fill="currentColor"/><circle cx="4" cy="20" r="1.2" fill="currentColor"/></svg></button>')+'<button class="ib" data-act="msopen" aria-label="Ansicht und Kartendesign" title="Ansicht und Kartendesign"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"><path d="M12 3L3 8l9 5 9-5z"/><path d="M3 13l9 5 9-5"/></svg></button></div>';
   if(ui.msOpen){const d3=S.mapView!=='flach';h+='<div class="msmenu"><div class="row" style="justify-content:space-between;margin-bottom:8px"><b class="sm">Ansicht</b><button class="x2" data-act="msopen" aria-label="Schließen">✕</button></div><div class="vwseg"><button class="'+(d3?'':'on')+'" data-act="mview" data-v="flach" aria-pressed="'+!d3+'"><svg viewBox="0 0 64 40" aria-hidden="true"><rect x="1" y="1" width="62" height="38" rx="7" fill="none" stroke="currentColor" stroke-opacity=".35"/><path d="M10 28c6-9 10-9 15-3s8 5 12-2 9-10 17-5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><ellipse cx="22" cy="15" rx="9" ry="5.5" fill="none" stroke="currentColor" stroke-opacity=".5"/><ellipse cx="22" cy="15" rx="4" ry="2.4" fill="none" stroke="currentColor" stroke-opacity=".5"/><circle cx="45" cy="13" r="2.6" fill="currentColor"/></svg><span><b>Von oben</b><small>Flache Karte</small></span></button><button class="'+(d3?'on':'')+'" data-act="mview" data-v="3d" aria-pressed="'+d3+'"><svg viewBox="0 0 64 40" aria-hidden="true"><rect x="1" y="1" width="62" height="38" rx="7" fill="none" stroke="currentColor" stroke-opacity=".35"/><path d="M5 33L21 13l7 8 8-13 23 25z" fill="currentColor" fill-opacity=".16" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M36 8l-4 8 4-2 3 4 3-3" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/><path d="M31 35c2-6 7-6 6-12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-dasharray="1.5 3" stroke-linecap="round"/></svg><span><b>3D</b><small>In den Bergen</small></span></button></div><b class="sm" style="display:block;margin:13px 0 8px">Kartendesign</b>'+msCards()+'</div>'}
   if(ui.leg)h+=legendHTML(lage);
   h+='<div class="zoomctl"><button data-act="zin" aria-label="Vergrößern">+</button><button data-act="zout" aria-label="Verkleinern">−</button><button data-act="zreset" aria-label="Ansicht zurücksetzen"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 9V5h4M20 9V5h-4M4 15v4h4M20 15v4h-4"/></svg></button></div>';
@@ -5152,7 +5171,7 @@ async function t3Shade(L,es){
       let dn=9;if(RDc){const dzc=z-sc.ZC;dn=Math.sqrt(x*x+dzc*dzc)/(RDc*t3Wob(Math.atan2(-dzc,x)))}
       const ca=1-t3ss(.98,1.5,dn+(n2-.5)*.12),tr=ca*(1-t3ss(.28,.7,dn+(n2-.5)*.3)),
         cm=t3ss(.36,.62,t3fbm(x/330+5,z/330+2,2)+(n2-.5)*.1),
-        fo=(1-t3ss(.3,.56,sl))*(1-t3ss(.34,.52,t+(n1-.5)*.14))*cm*(.5+.5*t3ss(0,.05,sl))*(1-wf)*(1-ca)*(1-bk*.8),sp=.5*n2+.5*n3;
+        fo=(1-t3ss(.3,.56,sl))*(1-t3ss(.34,.52,t+(n1-.5)*.14))*cm*(.5+.5*t3ss(0,.05,sl))*(1-wf)*(1-ca)*(1-bk*.8)*(RDc?1:.35+.65*t3ss(2300,3600,z)),sp=.5*n2+.5*n3;
       if(es==='natur'){
         const gh=t3ss(.04,.38,t+(n1-.5)*.12);
         r=.17+.24*gh+.07*n1;g=.43+.05*gh-.04*n1;b=.08+.05*gh;r*=.86+.28*sp;g*=.9+.2*sp;
@@ -5246,7 +5265,7 @@ function t3Wait(st,es,m){const W=T3W[es]||T3W.natur;
 function t3Head(st,es,T,m,label){const W=T3W[es]||T3W.natur,im=T.im,I=a=>'<image x="'+a.x+'" y="'+a.y+'" width="'+a.w+'" height="'+a.h+'" preserveAspectRatio="none" href="'+a.url+'"/>';
   return '<svg class="ms-'+st+' v2 m3" style="'+styleVars(st)+'" viewBox="'+vbFor(m)+'" preserveAspectRatio="xMidYMid meet" role="application" tabindex="0" aria-label="'+label+'"><defs><radialGradient id="conq"><stop offset="0" style="stop-color:var(--conqc);stop-opacity:.3"/><stop offset=".65" style="stop-color:var(--conqc);stop-opacity:.12"/><stop offset="1" style="stop-color:var(--conqc);stop-opacity:0"/></radialGradient><pattern id="hatch" width="7" height="7" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2="7" stroke="var(--hatch)" stroke-width="1.2"/></pattern></defs><rect x="-6000" y="-6000" width="13000" height="13000" fill="'+t3rgb(W.fog)+'"/><rect x="-6000" y="-6000" width="13000" height="'+(6000+im.c.y+3)+'" fill="'+t3rgb(W.sky[0])+'"/>'+I(im.c)+I(im.f)}
 /* Bäume: Standorte einmal pro Gitter würfeln, dann je Welt als Nadelbäume zeichnen */
-function t3Scatter(L,n,seed){const sc=L.sc,r=rng(seed),out=[],{NC,NK,zs,U0,DU}=L,RDc=sc.RD,RV=sc.riv,zmax=RDc?9500:8200,kmax=Math.min(NK-2,Math.floor(Math.log(zmax/L.Z0)/L.lq));let tries=0;
+function t3Scatter(L,n,seed,zm){const sc=L.sc,r=rng(seed),out=[],{NC,NK,zs,U0,DU}=L,RDc=sc.RD,RV=sc.riv,zmax=zm||(RDc?9500:8200),kmax=Math.min(NK-2,Math.floor(Math.log(zmax/L.Z0)/L.lq));let tries=0;
   while(out.length<n&&tries++<n*60){const k=Math.floor(Math.pow(r(),.85)*kmax),z=zs[k]*(1+r()*.01),x=(U0+Math.floor(r()*(NC-2))*DU)*z+(r()-.5)*40,h=L.h(x,z);if(h<6)continue;
     const gx=L.at(L.GX,x,z),gz=L.at(L.GZ,x,z),sl=1-1/Math.sqrt(gx*gx+gz*gz+1),t=h/sc.hmax;if(sl>.28||t>.4)continue;
     const cm=t3ss(.36,.62,t3fbm(x/330+5,z/330+2,2)),pr=cm>.5?.92:cm>.3?(cm-.3)*2.2:.03;if(r()>pr)continue;
@@ -5257,15 +5276,15 @@ function t3Scatter(L,n,seed){const sc=L.sc,r=rng(seed),out=[],{NC,NK,zs,U0,DU}=L
   out.sort((a,b)=>b.z-a.z);return out}
 const T3TC={natur:{b:[.09,.26,.15],l:[.24,.5,.26],sh:.2},glas:{b:[.52,.7,.86],l:[.95,.98,1],sh:.1},nacht:{b:[.04,.08,.19],l:[.15,.25,.46],sh:.3},blau:{b:[.02,.1,.36],l:[.25,.62,.95],sh:.25}};
 const T3TS=[[0,-1],[.5,-.64],[.24,-.64],[.78,-.32],[.4,-.32],[1,0]];
-function t3Trees(L,es){const W=T3W[es]||T3W.natur,TC=T3TC[es]||T3TC.natur,sc=L.sc,F=sc.F,f1=v=>v.toFixed(1),NB=4,bn=[];for(let i=0;i<NB;i++)bn.push({s:'',d:'',l:''});
+function t3Trees(L,es,av){const W=T3W[es]||T3W.natur,TC=T3TC[es]||T3TC.natur,sc=L.sc,F=sc.F,f1=v=>v.toFixed(1),NB=4,bn=[];for(let i=0;i<NB*2;i++)bn.push({s:'',d:'',l:''});
   const hex=a=>'rgb('+a.map(v=>Math.round(clamp(v,0,1)*255)).join(',')+')',mx=(a,b,t)=>a.map((v,i)=>v+(b[i]-v)*t);
-  (L.trees||(L.trees=t3Scatter(L,sc.RD?720:980,sc.RD?77:41))).forEach(p=>{if(!p.vis)return;const fg=1-Math.exp(-Math.pow(Math.max(0,p.z-L.Z0*.9)/sc.fogd,sc.fogp));if(fg>.86)return;const bi=Math.min(NB-1,Math.floor(fg/.86*NB)),B=bn[bi],ht=p.sz*F/p.z,w=ht*.23,x=p.x,y=p.y;
+  (L.trees||(L.trees=t3Scatter(L,sc.RD?720:980,sc.RD?77:41).concat(sc.RD?[]:t3Scatter(L,380,91,2900)).sort((a,b)=>b.z-a.z))).forEach(p=>{if(!p.vis)return;const fg=1-Math.exp(-Math.pow(Math.max(0,p.z-L.Z0*.9)/sc.fogd,sc.fogp));if(fg>.86)return;if(av&&av(p.x,p.y,18))return;const bi=Math.min(NB-1,Math.floor(fg/.86*NB)),B=bn[bi*2+(((p.x*7+p.z*3)|0)&1)],ht=p.sz*F/p.z,w=ht*.23,x=p.x,y=p.y;
     if(p.t<.1&&es==='natur'&&((x*7+p.z)|0)%3===0){const rx=ht*.27,ry=ht*.33;B.s+='M'+f1(x-ht*.1)+' '+f1(y+ht*.02)+'a'+f1(ht*.3)+' '+f1(ht*.06)+' 0 1 0 '+f1(ht*.6)+' 0a'+f1(ht*.3)+' '+f1(ht*.06)+' 0 1 0 '+f1(-ht*.6)+' 0';B.d+='M'+f1(x-rx)+' '+f1(y-ht*.5)+'a'+f1(rx)+' '+f1(ry)+' 0 1 0 '+f1(2*rx)+' 0a'+f1(rx)+' '+f1(ry)+' 0 1 0 '+f1(-2*rx)+' 0Z';B.l+='M'+f1(x-rx*.95)+' '+f1(y-ht*.58)+'a'+f1(rx*.55)+' '+f1(ry*.55)+' 0 1 0 '+f1(rx*1.1)+' 0a'+f1(rx*.55)+' '+f1(ry*.55)+' 0 1 0 '+f1(-rx*1.1)+' 0Z';return}
     B.s+='M'+f1(x-ht*.1)+' '+f1(y+ht*.02)+'a'+f1(ht*.3)+' '+f1(ht*.06)+' 0 1 0 '+f1(ht*.6)+' 0a'+f1(ht*.3)+' '+f1(ht*.06)+' 0 1 0 '+f1(-ht*.6)+' 0';
     let R='M'+f1(x)+' '+f1(y-ht),Lf='M'+f1(x)+' '+f1(y-ht);T3TS.forEach((q,j)=>{if(j)R+='L'+f1(x+q[0]*w)+' '+f1(y+q[1]*ht)});for(let j=T3TS.length-1;j>=1;j--)R+='L'+f1(x-T3TS[j][0]*w)+' '+f1(y+T3TS[j][1]*ht);
     T3TS.forEach((q,j)=>{if(j)Lf+='L'+f1(x-q[0]*w)+' '+f1(y+q[1]*ht)});Lf+='L'+f1(x)+' '+f1(y);B.d+=R+'Z';B.l+=Lf+'Z'});
-  let o='';for(let i=NB-1;i>=0;i--){const B=bn[i];if(!B.d)continue;const ft=(i+.5)/NB*.86,fc=W.fog;
-    o+='<path d="'+B.s+'" fill="#000" opacity="'+(TC.sh*(1-ft)).toFixed(2)+'"/><path d="'+B.d+'" fill="'+hex(mx(TC.b,fc,ft))+'"'+(es==='blau'?' stroke="#5ec4ff" stroke-width=".7" stroke-opacity="'+(.8*(1-ft)).toFixed(2)+'"':'')+'/><path d="'+B.l+'" fill="'+hex(mx(TC.l,fc,ft))+'" opacity=".9"/>'}
+  let o='';for(let i=NB*2-1;i>=0;i--){const B=bn[i];if(!B.d)continue;const ft=((i>>1)+.5)/NB*.86,fc=W.fog,tn=(i&1)?(es==='natur'?[.05,.06,-.02]:[.04,.04,.04]):[0,0,0],cb=TC.b.map((v,j)=>v+tn[j]),cl=TC.l.map((v,j)=>v+tn[j]);
+    o+='<path d="'+B.s+'" fill="#000" opacity="'+(TC.sh*(1-ft)).toFixed(2)+'"/><path d="'+B.d+'" fill="'+hex(mx(cb,fc,ft))+'"'+(es==='blau'?' stroke="#5ec4ff" stroke-width=".7" stroke-opacity="'+(.8*(1-ft)).toFixed(2)+'"':'')+'/><path d="'+B.l+'" fill="'+hex(mx(cl,fc,ft))+'" opacity=".9"/>'}
   return o}
 /* Zelt: Vorderseite, Seitenfläche, Eingang */
 function t3Tent(x,y,s,es){const C={natur:['#f0e4c6','#c9b78f','#4b3d2c'],glas:['#ffffff','#cfe0f2','#6f8fb4'],nacht:['#6f7fb4','#3c4a7c','#ffbe6a'],blau:['#12417f','#082a5c','#5ec4ff']}[es]||['#f0e4c6','#c9b78f','#4b3d2c'],f=v=>v.toFixed(1),X=(a,b)=>f(x+a*s)+' '+f(y+b*s),st=es==='blau'?' stroke="#5ec4ff" stroke-width="1"':'',pad=es==='nacht'||es==='blau'?'#0a1030':es==='glas'?'#9fb9d4':'#a8935f',fl=es==='nacht'?'#ffbe6a':es==='blau'?'#5ec4ff':'#d4553a';
@@ -5277,6 +5296,83 @@ function t3Trail(L,pts,dh){const s=pts.map(p=>{const h=L.h(p[0],p[1])+(dh||5),q=
   const at=f=>{const i=Math.min(n-1,f|0),w=f-i;return [s[i][0]+(s[i+1][0]-s[i][0])*w,s[i][1]+(s[i+1][1]-s[i][1])*w]},pt=t=>at(fi(t));
   const path=(a,b)=>{const fa=fi(a),fb=fi(b);let d='',on=0;const add=(q,v)=>{if(v){d+=(on?'L':'M')+f1(q[0])+' '+f1(q[1]);on=1}else on=0};add(at(fa),s[Math.round(fa)][2]);for(let i=Math.floor(fa)+1;i<fb;i++)add(s[i],s[i][2]);add(at(fb),s[Math.round(fb)][2]);return d};
   return {pt,path,s}}
+
+/* ===== Landschaft: Details als Vektor-Ebene (Fluss, Gras, Blumen, Steine) ===== */
+const T3RV={natur:{bank:'#b3a57f',wet:'#4f5f3f',c:['#93bcaa','#6ea9a6','#4f90a0','#3d7a94','#336b88'],sky:'#d6ebf7',foam:'#ffffff',gl:'#ffffff',rock:['#6f6b60','#a29d8e','#3c3a33'],reed:'#58853a',o:1},
+  glas:{bank:'#dfe8f1',wet:'#9fb8d0',c:['#b7dcef','#8dc4e6','#6aaedb','#4f98c9','#3f86ba'],sky:'#ffffff',foam:'#ffffff',gl:'#ffffff',rock:['#8aa0b6','#c3d3e2','#5d7590'],reed:'#9cbcce',o:1},
+  nacht:{bank:'#44476a',wet:'#171c3a',c:['#2b4b7e','#20407a','#173266','#10265a','#0b1c48'],sky:'#7f94d4',foam:'#b9c6f0',gl:'#eaf0ff',rock:['#3a4262','#586390','#1c2140'],reed:'#2a4570',o:1},
+  blau:{bank:'#0a4aa0',wet:'#08306e',c:['#1e78e0','#1888f4','#0f72e0','#0a5ec8','#0848a8'],sky:'#7fd2ff',foam:'#c8ecff',gl:'#eaffff',rock:['#0a3f86','#2d84d8','#052a5e'],reed:'#2a92e0',o:1}};
+function t3River(L,es){
+  const sc=L.sc,RV=sc.riv;if(!RV)return '';const f1=v=>v.toFixed(1),C=T3RV[es]||T3RV.natur,W=T3W[es]||T3W.natur;
+  if(!L.rvS){const A=[];let z=Math.max(L.Z0*1.05,1500);const zmax=Math.min(L.Z1*.98,6400);
+    while(z<zmax){const v=RV(z);if(v.k>.035){const hw=v.w*v.s*(.9+.05*Math.sin(z/61)+.04*Math.sin(z/23+1))*(.3+.7*Math.min(1,v.k*1.6)),hs=L.h(v.x,z)+2.6;A.push({z,xc:v.x,hw,hs,vis:L.vis(v.x,z,hs+5)?1:0})}z+=Math.max(20,z*.011)}
+    L.rvS=A}
+  const A=L.rvS;if(A.length<3)return '';
+  const fgf=z=>1-Math.exp(-Math.pow(Math.max(0,z-L.Z0*.9)/sc.fogd,sc.fogp)),NBD=5,bd=z=>Math.min(NBD-1,Math.floor(clamp(fgf(z)/.9,0,.999)*NBD)),P=(a,u)=>L.p(a.xc+u*a.hw,a.z,a.hs);
+  const runs=[];{let cur=null,last=-9;A.forEach((a,i)=>{if(!a.vis){cur=null;return}const b=bd(a.z);if(!cur||cur.b!==b){cur={b,idx:(cur&&last===i-1)?[i-1]:[]};runs.push(cur)}cur.idx.push(i);last=i})}
+  const poly=(ix,f)=>{let d='';ix.forEach((i,k)=>{const q=P(A[i],-f);d+=(k?'L':'M')+f1(q[0])+' '+f1(q[1])});for(let k=ix.length-1;k>=0;k--){const q=P(A[ix[k]],f);d+=' L'+f1(q[0])+' '+f1(q[1])}return d+'Z'},
+    line=(ix,u,wb)=>ix.map((i,k)=>{const a=A[i],q=P(a,u+(wb?wb*Math.sin(a.z/37+u*7):0));return (k?'L':'M')+f1(q[0])+' '+f1(q[1])}).join(''),
+    ell=(x,y,rx,ry)=>'M'+f1(x-rx)+' '+f1(y)+'a'+f1(rx)+' '+f1(ry)+' 0 1 0 '+f1(2*rx)+' 0a'+f1(rx)+' '+f1(ry)+' 0 1 0 '+f1(-2*rx)+' 0Z';
+  const B=[];for(let i=0;i<NBD;i++)B.push({wet:'',w0:'',w1:'',w2:'',w3:'',w4:'',rf:'',fm:'',ol:'',gl:'',tw:'',rk:'',rkh:'',rks:'',rd:'',st:[]});
+  const rr=rng(909);
+  runs.forEach(R=>{const ix=R.idx;if(ix.length<2)return;const b=B[R.b],a0=A[ix[0]],ws=Math.abs(P(a0,1)[0]-P(a0,-1)[0])||4;
+    b.wet+=poly(ix,1.42);b.w0+=poly(ix,1.04);b.w1+=poly(ix,.76);b.w2+=poly(ix,.52);b.w3+=poly(ix,.3);b.w4+=poly(ix,.14);b.rf+=poly(ix,.98);
+    [-.66,-.34,.02,.36,.68].forEach((u,j)=>{b.st.push({d:line(ix,u,.09),ws,j})});
+    b.fm+=line(ix,-.93,.04)+line(ix,.93,.04);b.ol+=line(ix,-1.04,.03)+line(ix,1.04,.03);
+    ix.forEach((i,k)=>{const a=A[i],wsi=Math.abs(P(a,1)[0]-P(a,-1)[0])||2;
+      if(k%2===0&&rr()<.6){const q=P(a,(rr()-.5)*1.5),ln=wsi*(.05+.1*rr());const d='M'+f1(q[0])+' '+f1(q[1])+'h'+f1(ln);if(rr()<.14)b.tw+=d;else b.gl+=d}
+      if(k%2===1&&rr()<.5){const sd=rr()<.5?-1:1,q=P(a,sd*(1.06+.5*rr())),r=wsi*(.035+.05*rr());b.rks+=ell(q[0]+r*.2,q[1]+r*.45,r*1.35,r*.5);b.rk+=ell(q[0],q[1],r*1.25,r*.75);b.rkh+=ell(q[0]-r*.2,q[1]-r*.25,r*.65,r*.32)}
+      if(k%2===0&&rr()<.55){const sd=rr()<.5?-1:1,q=P(a,sd*(1.12+.5*rr())),h=wsi*(.08+.08*rr());for(let t=0;t<4;t++){const dx=(t-1.5)*wsi*.014;b.rd+='M'+f1(q[0]+dx)+' '+f1(q[1])+'q'+f1(dx*.4)+' '+f1(-h*.5)+' '+f1(dx*1.6)+' '+f1(-h)}}})});
+  let o='';
+  for(let i=NBD-1;i>=0;i--){const b=B[i];if(!b.w0)continue;const fg=fgf(sc.fogd*Math.pow((i+.5)/NBD*.9,1/sc.fogp)+L.Z0*.9),op=clamp(1-fg*1.1,.1,1),wsb=b.st.length?b.st[0].ws:6,ww=Math.max(.7,wsb*.03);
+    o+='<g opacity="'+op.toFixed(2)+'"><path d="'+b.wet+'" fill="'+C.bank+'" fill-opacity=".5"/><path d="'+b.w0+'" fill="'+C.wet+'" fill-opacity=".55"/>'+
+      '<path d="'+b.w0+'" fill="'+C.c[0]+'"/><path d="'+b.w1+'" fill="'+C.c[1]+'" fill-opacity=".85"/><path d="'+b.w2+'" fill="'+C.c[2]+'" fill-opacity=".8"/><path d="'+b.w3+'" fill="'+C.c[3]+'" fill-opacity=".75"/><path d="'+b.w4+'" fill="'+C.c[4]+'" fill-opacity=".6"/>'+
+      '<path d="'+b.rf+'" fill="'+C.sky+'" fill-opacity="'+(.07+.06*i+(es==='nacht'?.04:0)).toFixed(2)+'"/>'+
+      '<path d="'+b.ol+'" fill="none" stroke="'+C.wet+'" stroke-opacity=".5" stroke-width="'+f1(ww*1.5)+'" stroke-linecap="round"/><path d="'+b.fm+'" fill="none" stroke="'+C.foam+'" stroke-opacity=".6" stroke-width="'+f1(ww)+'" stroke-dasharray="'+f1(ww*2)+' '+f1(ww*4)+'" stroke-linecap="round"/>';
+    b.st.forEach(t=>{const w=t.ws;o+='<path'+(t.j%2===0?' class="rvf" style="animation-duration:'+(5+t.j)+'s"':'')+' d="'+t.d+'" fill="none" stroke="'+(t.j%2?C.sky:C.gl)+'" stroke-opacity="'+(es==='nacht'?.3:.4)+'" stroke-width="'+f1(Math.max(.7,w*.022))+'" stroke-dasharray="'+f1(w*.35)+' '+f1(w*.5)+' '+f1(w*.1)+' '+f1(w*.75)+'" stroke-linecap="round"/>'});
+    o+='<path d="'+b.gl+'" stroke="'+C.gl+'" stroke-opacity=".75" stroke-width="'+f1(Math.max(.7,ww*.9))+'" stroke-linecap="round" fill="none"/>'+(b.tw?'<path class="tw" d="'+b.tw+'" stroke="'+C.gl+'" stroke-width="'+f1(Math.max(.9,ww))+'" stroke-linecap="round" fill="none"/>':'')+
+      '<path d="'+b.rks+'" fill="#000" opacity=".28"/><path d="'+b.rk+'" fill="'+C.rock[0]+'"/><path d="'+b.rkh+'" fill="'+C.rock[1]+'" opacity=".9"/><path d="'+b.rd+'" fill="none" stroke="'+C.reed+'" stroke-width="'+f1(Math.max(.6,ww*.5))+'" stroke-linecap="round"/></g>'}
+  return o}
+/* Gras, Blumen und Steine: feines Detail, das die Landschaft nah am Betrachter lebendig macht */
+const T3GR={natur:{bl:['#3f7a2e','#5f9a3c','#2e5f26','#92ad4c'],fl:['#ffffff','#ffd84a','#ee86b6','#b890ec'],st:['#a6a193','#7d7a6d']},glas:{bl:['#c9dfee','#e8f3fb','#a7c3d9','#d7e8f4'],fl:[],st:['#a7bbcf','#8aa0b6']},nacht:{bl:['#1f3d59','#2d5878','#152c46','#3a6a8c'],fl:['#cfe0ff','#9fb4ff','#ffe9a8'],st:['#3d4666','#2b3250']}};
+function t3Tufts(L,es,av){
+  const G=T3GR[es];if(!G)return '';const sc=L.sc,F=sc.F,f1=v=>v.toFixed(1),W=T3W[es]||T3W.natur;
+  if(!L.tuf){const r=rng(sc.RD?133:57),out=[],{NC,NK,zs,U0,DU}=L,RDc=sc.RD,RV=sc.riv,zmax=4300,kmax=Math.min(NK-2,Math.floor(Math.log(zmax/L.Z0)/L.lq));let tries=0;
+    const ok=(x,z,h,wet)=>{if(h<5)return 0;const gx=L.at(L.GX,x,z),gz=L.at(L.GZ,x,z),sl=1-1/Math.sqrt(gx*gx+gz*gz+1),t=h/sc.hmax;if(sl>.2||t>.34)return 0;
+      if(RDc){const dzc=z-sc.ZC,dn=Math.sqrt(x*x+dzc*dzc)/(RDc*t3Wob(Math.atan2(-dzc,x)));if(dn<1.1)return 0}else{const dx=x-sc.ST.x,dz=z-sc.ST.z,bx=x-sc.BL.x,bz=z-sc.BL.z;if(dx*dx+dz*dz<90*90||bx*bx*.6+bz*bz<260*260)return 0}
+      if(RV){const v=RV(z);if(v.k>.02&&Math.abs(x-v.x)/v.s<v.w*(wet?1.15:1.3))return 0}return 1};
+    while(out.length<1000&&tries++<9000){const k=Math.floor(Math.pow(r(),.8)*kmax),z=zs[k]*(1+r()*.01),x=(U0+Math.floor(r()*(NC-2))*DU)*z+(r()-.5)*40,h=L.h(x,z);if(!ok(x,z,h,0))continue;const q=L.p(x,z,h);out.push({x:q[0],y:q[1],z,vis:L.vis(x,z,h+3),a:r(),b:r(),w:0})}
+    if(RV){tries=0;let n2=0;while(n2<320&&tries++<4000){const z=L.Z0*1.1+r()*(zmax-L.Z0*1.1),v=RV(z);if(v.k<.05)continue;const sd=r()<.5?-1:1,x=v.x+sd*v.w*v.s*(1.2+r()*1.6),h=L.h(x,z);if(!ok(x,z,h,1))continue;const q=L.p(x,z,h);out.push({x:q[0],y:q[1],z,vis:L.vis(x,z,h+3),a:r(),b:r(),w:1});n2++}}
+    out.sort((a,b)=>b.z-a.z);L.tuf=out}
+  const NB=3,mk=()=>({bl:G.bl.map(()=>''),fl:G.fl.map(()=>''),st:'',ss:''}),bn=[];for(let i=0;i<NB;i++)bn.push(mk());
+  L.tuf.forEach(p=>{if(!p.vis)return;const fg=1-Math.exp(-Math.pow(Math.max(0,p.z-L.Z0*.9)/sc.fogd,sc.fogp));if(fg>.7)return;if(av&&av(p.x,p.y,14))return;const B=bn[Math.min(NB-1,Math.floor(fg/.7*NB))],ht=(10+14*p.a)*(p.w?1.5:1)*F/p.z,x=p.x,y=p.y;
+    if(p.a<.045&&!p.w){const r=ht*.34;B.ss+='M'+f1(x-r)+' '+f1(y+r*.15)+'a'+f1(r*1.3)+' '+f1(r*.45)+' 0 1 0 '+f1(r*2.6)+' 0';B.st+='M'+f1(x-r)+' '+f1(y)+'a'+f1(r)+' '+f1(r*.62)+' 0 1 0 '+f1(r*2)+' 0a'+f1(r)+' '+f1(r*.62)+' 0 1 0 '+f1(-r*2)+' 0Z';return}
+    const nb=3+Math.floor(p.b*3),ci=Math.floor(p.b*G.bl.length*.999);let d='';for(let j=0;j<nb;j++){const t=nb>1?j/(nb-1):.5,ang=(t-.5)*1.1+(p.a*7%1-.5)*.25,hh=ht*(.7+.3*((p.a*13+j*.37)%1));d+='M'+f1(x+(t-.5)*ht*.16)+' '+f1(y)+'q'+f1(ang*hh*.15)+' '+f1(-hh*.55)+' '+f1(ang*hh*.55)+' '+f1(-hh)}
+    B.bl[ci]+=d;if(G.fl.length&&p.a>.86){const fi=Math.floor(p.b*G.fl.length*.999),r=Math.max(.7,ht*.17),fx=x+ht*.12,fy=y-ht*1.05;B.fl[fi]+='M'+f1(fx-r)+' '+f1(fy)+'a'+f1(r)+' '+f1(r)+' 0 1 0 '+f1(2*r)+' 0a'+f1(r)+' '+f1(r)+' 0 1 0 '+f1(-2*r)+' 0Z'}});
+  const hex=a=>'rgb('+a.map(v=>Math.round(clamp(v,0,1)*255)).join(',')+')',h2=c=>[parseInt(c.slice(1,3),16)/255,parseInt(c.slice(3,5),16)/255,parseInt(c.slice(5,7),16)/255],mx=(a,b,t)=>a.map((v,i)=>v+(b[i]-v)*t);
+  let o='';for(let i=NB-1;i>=0;i--){const B=bn[i],ft=(i+.5)/NB*.7,fc=W.fog,sw=[1.5,1,.75][i];
+    if(B.ss)o+='<path d="'+B.ss+'" fill="#000" opacity="'+(.22*(1-ft)).toFixed(2)+'"/><path d="'+B.st+'" fill="'+hex(mx(h2(G.st[0]),fc,ft))+'"/>';
+    G.bl.forEach((c,j)=>{if(B.bl[j])o+='<path d="'+B.bl[j]+'" fill="none" stroke="'+hex(mx(h2(c),fc,ft))+'" stroke-width="'+sw+'" stroke-linecap="round"/>'});
+    G.fl.forEach((c,j)=>{if(B.fl[j])o+='<path d="'+B.fl[j]+'" fill="'+hex(mx(h2(c),fc,ft*.6))+'"/>'})}
+  return o}
+/* Pfad der Vergangenheit: Verlauf als weiche, unregelmäßige Kurve durchs Gelände (flache Stellen, Fluss meiden) */
+function t3PastGeom(L,sc,H0,PS,nr){
+  const np=PS.length,key=np+'|'+(nr?1:0);if(L.pastG&&L.pastG.key===key)return L.pastG;
+  const hm=sc.ST,ne=np||3,sp=np?Math.max(28,Math.min(86,1450/np)):80,SUB=8,AM=nr?200:165,rr=rng(4242),cp=[[hm.x,hm.z]],RV=sc.riv,yAt=zz=>L.p(0,zz,L.h(0,zz))[1];
+  let z=hm.z,y0=H0[1];
+  for(let j=1;j<=ne+1;j++){const want=y0+(j===1?92:sp*(.7+.65*rr()));let zz=z;for(let k=0;k<500&&yAt(zz)<want&&zz>900;k++)zz-=6;z=zz;y0=yAt(zz);
+    const h=L.h(0,zz),a=L.p(0,zz,h),b2=L.p(100,zz,h),k=Math.abs(b2[0]-a[0])/100||.1,gr=Math.min(1,j/2.2),wv=.55*Math.sin(j*1.07+1.3)+.45*Math.sin(j*.43+4.1)+1.5*(t3vn(j*.7+2,9)-.5),wx=wv*AM*gr/k;
+    let bx=wx,bc=1e9;for(let d=-84;d<=84;d+=21){const x=wx+d/k,sl=Math.abs(L.h(x+22,zz)-L.h(x-22,zz))+Math.abs(L.h(x,zz+22)-L.h(x,zz-22));let c=sl+Math.abs(d)*.12;if(RV){const v=RV(zz);if(v.k>.02&&Math.abs(x-v.x)/v.s<v.w*2.4)c+=300}if(Math.abs(x*k)>AM*1.3)c+=200;if(c<bc){bc=c;bx=x}}
+    cp.push([bx,zz])}
+  const pts=[];for(let i=0;i<cp.length-1;i++){const p0=cp[Math.max(0,i-1)],p1=cp[i],p2=cp[i+1],p3=cp[Math.min(cp.length-1,i+2)];for(let k=0;k<SUB;k++){const u=k/SUB,u2=u*u,u3=u2*u;pts.push([.5*((2*p1[0])+(-p0[0]+p2[0])*u+(2*p0[0]-5*p1[0]+4*p2[0]-p3[0])*u2+(-p0[0]+3*p1[0]-3*p2[0]+p3[0])*u3),.5*((2*p1[1])+(-p0[1]+p2[1])*u+(2*p0[1]-5*p1[1]+4*p2[1]-p3[1])*u2+(-p0[1]+3*p1[1]-3*p2[1]+p3[1])*u3)])}}
+  pts.push(cp[cp.length-1]);
+  /* kleine Unregelmäßigkeiten, damit der Weg nicht wie gezeichnet wirkt */
+  pts.forEach((p,i)=>{if(i>SUB){const e=Math.min(1,(i-SUB)/SUB);p[0]+=(t3vn(i*.23+5,2)-.5)*46*e+(t3vn(i*.61+1,8)-.5)*18*e}});
+  pts.reverse();
+  const tr=t3Trail(L,pts,3),last=pts.length-1,sj=j=>tr.s[last-j*SUB],cell=24,hs=new Map();
+  tr.s.forEach(q=>{const k=Math.floor(q[0]/cell)+','+Math.floor(q[1]/cell);(hs.get(k)||hs.set(k,[]).get(k)).push(q)});
+  const avoid=(x,y,R)=>{R=R||16;const cx=Math.floor(x/cell),cy=Math.floor(y/cell);for(let i=-1;i<=1;i++)for(let j=-1;j<=1;j++){const a=hs.get((cx+i)+','+(cy+j));if(a)for(const q of a)if(Math.abs(q[0]-x)<R&&Math.abs(q[1]-y)<R)return true}return false};
+  return L.pastG={key,tr,sj,ne,np,sp,last,SUB,avoid,bottom:sj(ne+1)[1]+120}}
 function mapSVG3D(st){
   const es=WORLDS[st]||'natur',T=t3Get('richtung',es);if(!T)return t3Wait(st,es,'richtung3');
   const {sc,L}=T,nr=NARROW(),f1=v=>v.toFixed(1),gs=S.goals.slice().sort((a,b)=>a.rank-b.rank).slice(0,4),dark=st==='bauplan'||st==='nacht';
@@ -5285,7 +5381,8 @@ function mapSVG3D(st){
   const n=Object.keys(P).length,hm=sc.ST,H0=L.p(hm.x,hm.z,L.h(hm.x,hm.z)),bl=sc.BL,B0=L.p(bl.x,bl.z,L.h(bl.x,bl.z));
   let o=t3Head(st,es,T,'richtung3','Karte in 3D. Mit Pfeiltasten bewegen, mit Plus und Minus zoomen');
   o+=v2Compass(nr?828:940,752);
-  o+=t3Trees(L,es);
+  const PS=(S.past||[]).slice().sort((a,b)=>a.at-b.at).slice(-50),PG=S.pastOn===false?null:t3PastGeom(L,sc,H0,PS,nr);ui.pastBottom=PG?PG.bottom:0;
+  o+=t3River(L,es)+t3Tufts(L,es,PG&&PG.avoid)+t3Trees(L,es,PG&&PG.avoid);
   /* Basislager: Kreis am Talboden */
   {let d='';for(let i=0;i<=48;i++){const a=i/48*Math.PI*2,x=bl.x+Math.cos(a)*300,z=bl.z+Math.sin(a)*215,q=L.p(x,z,L.h(x,z)+3);d+=(i?'L':'M')+f1(q[0])+' '+f1(q[1])}
     o+='<path d="'+d+'Z" fill="var(--panel)" fill-opacity=".16"/><path d="'+d+'Z" fill="url(#hatch)" opacity=".32"/><path d="'+d+'Z" fill="none" stroke="var(--dim)" stroke-width="1.2" stroke-dasharray="5 5"/>'}
@@ -5335,34 +5432,23 @@ function mapSVG3D(st){
     const dt=g.date?fd(g.date,{month:'short',year:'numeric'}).replace('.',''):'';
     o+='<text class="tx" x="'+f1(x)+'" y="'+f1(y-41)+'" text-anchor="middle" font-size="9.5" font-weight="600" fill="var(--mute)">ZIEL '+g.rank+(dt?' · '+dt:'')+'</text><text class="tx" x="'+f1(x)+'" y="'+f1(y-27)+'" text-anchor="middle" font-size="15" font-weight="700" fill="var(--text)">'+esc(g.name)+'</text>';
     if(g.m){const t=nf(g.m.now)+' von '+nf(g.m.target)+' '+(g.m.unit||''),w=pw(t,11)+22,yy=p[1]+10;o+=plaque(x-w/2,yy,w,22,'<circle cx="'+f1(x-w/2+11)+'" cy="'+f1(yy+11)+'" r="3.6" fill="'+gc+'"/><text x="'+f1(x-w/2+19)+'" y="'+f1(yy+15)+'" font-size="11" font-weight="600" fill="var(--text)">'+esc(t)+'</text>')}});
-  /* Vergangenheit: Pfad aus der Tiefe bis Start · Heute. Er wird mit jedem Eintrag länger und lässt sich entlang schieben. */
-  {const PS=(S.past||[]).slice().sort((a,b)=>a.at-b.at).slice(-50),np=PS.length,ne=np||3,
-    PC=({natur:['#e8d6a6','#7a5f33','#d9534f'],glas:['#ffffff','#5f7f9c','#ff7a59'],nacht:['#f3d39a','#2a2230','#ffb454'],blau:['#a9d6ff','#0d3560','#ffb454']})[es]||['#e8d6a6','#7a5f33','#d9534f'],
-    ST=dark?['#5d6688','#7f89ad','#a3acc9']:['#9a9484','#b9b3a3','#d6d1c3'],
-    sp=np?Math.max(28,Math.min(86,1450/np)):80,g=Math.max(2,Math.round(150/sp)),AM=nr?170:150,cp=[[hm.x,hm.z]],SUB=8;
-    /* Kontrollpunkte: je Eintrag einer, in gleichem Bildabstand nach vorne, als weiche S-Kurve */
-    {let z=hm.z,y0=H0[1];const yAt=zz=>L.p(0,zz,L.h(0,zz))[1];for(let j=1;j<=ne+1;j++){const want=y0+(j===1?70:sp);let zz=z;for(let k=0;k<400&&yAt(zz)<want&&zz>900;k++)zz-=6;z=zz;y0=yAt(zz);
-      const h=L.h(0,zz),a=L.p(0,zz,h),b2=L.p(100,zz,h),k=Math.abs(b2[0]-a[0])/100||.1,sx=Math.sin(j*Math.PI/g)*AM*Math.min(1,j/2);cp.push([sx/k,zz])}}
-    const pts=[];for(let i=0;i<cp.length-1;i++){const p0=cp[Math.max(0,i-1)],p1=cp[i],p2=cp[i+1],p3=cp[Math.min(cp.length-1,i+2)];for(let k=0;k<SUB;k++){const u=k/SUB,u2=u*u,u3=u2*u;pts.push([.5*((2*p1[0])+(-p0[0]+p2[0])*u+(2*p0[0]-5*p1[0]+4*p2[0]-p3[0])*u2+(-p0[0]+3*p1[0]-3*p2[0]+p3[0])*u3),.5*((2*p1[1])+(-p0[1]+p2[1])*u+(2*p0[1]-5*p1[1]+4*p2[1]-p3[1])*u2+(-p0[1]+3*p1[1]-3*p2[1]+p3[1])*u3)])}}
-    pts.push(cp[cp.length-1]);pts.reverse();
-    /* pts läuft jetzt vom fernen Ende bis Start; Index eines Kontrollpunkts j: (n-1)-j*SUB */
-    const tr=t3Trail(L,pts,3),sS=tr.s,last=pts.length-1,sj=j=>sS[last-j*SUB],NS=Math.min(30,Math.max(8,ne+1));let pd='';
-    ui.pastBottom=sj(ne+1)[1]+120;
-    const wAt=y=>clamp(4.5+(y-1050)/330,5,13);
-    for(let k=0;k<NS;k++){const d=tr.path(k/NS,(k+1)/NS);if(!d)continue;const ym=sS[Math.round((k+.5)/NS*last)][1],w=wAt(ym),op=np?.95-.45*(1-(k+.5)/NS):.5;
-      if(np)pd+='<path d="'+d+'" fill="none" stroke="#000" stroke-opacity="'+(dark?.3:.15)+'" stroke-width="'+f1(w+3.5)+'" stroke-linecap="round" stroke-linejoin="round"/><path d="'+d+'" fill="none" stroke="'+PC[0]+'" stroke-opacity="'+op.toFixed(2)+'" stroke-width="'+f1(w)+'" stroke-linecap="round" stroke-linejoin="round"/><path d="'+d+'" fill="none" stroke="'+PC[1]+'" stroke-opacity="'+(op*.7).toFixed(2)+'" stroke-width="1.3" stroke-dasharray="1 5" stroke-linecap="round"/>';
-      else pd+='<path d="'+d+'" fill="none" stroke="'+PC[0]+'" stroke-opacity=".5" stroke-width="3.4" stroke-dasharray="2 8" stroke-linecap="round"/>'}
-    const hitD=tr.path(0,1);o+='<g class="pastg">'+pd+(hitD?'<path d="'+hitD+'" data-act="past" fill="none" stroke="transparent" stroke-width="26" stroke-linecap="round"/>':'');
+  /* Vergangenheit: Pfad aus der Tiefe bis Start · Heute. Er wird mit jedem Eintrag länger, schlängelt sich durchs Gelände und lässt sich ein- und ausblenden. */
+  if(PG){const np=PS.length,ne=PG.ne,tr=PG.tr,sS=tr.s,last=PG.last,sj=PG.sj,sp=PG.sp,nm=ui.pastAnim==='in',
+    PC=({natur:['#e8d6a6','#7a5f33','#d9534f'],glas:['#bdd7ec','#3f6485','#ff7a59'],nacht:['#f3d39a','#2a2230','#ffb454'],blau:['#a9d6ff','#0d3560','#ffb454']})[es]||['#e8d6a6','#7a5f33','#d9534f'],
+    ST=dark?['#5d6688','#7f89ad','#a3acc9']:['#9a9484','#b9b3a3','#d6d1c3'],NS=Math.min(30,Math.max(8,ne+1)),wAt=y=>clamp(4.5+(y-1050)/330,5,13);let pd='';
+    for(let k=0;k<NS;k++){const d=tr.path(k/NS,(k+1)/NS);if(!d)continue;const ym=sS[Math.round((k+.5)/NS*last)][1],w=wAt(ym),op=np?.95-.45*(1-(k+.5)/NS):.5,dl=nm?' style="animation-delay:'+((NS-1-k)*.05).toFixed(2)+'s"':'';
+      if(np)pd+='<path class="pseg" pathLength="1"'+dl+' d="'+d+'" fill="none" stroke="#000" stroke-opacity="'+(dark?.3:.15)+'" stroke-width="'+f1(w+3.5)+'" stroke-linecap="round" stroke-linejoin="round"/><path class="pseg" pathLength="1"'+dl+' d="'+d+'" fill="none" stroke="'+PC[0]+'" stroke-opacity="'+op.toFixed(2)+'" stroke-width="'+f1(w)+'" stroke-linecap="round" stroke-linejoin="round"/><path class="pdash" d="'+d+'" fill="none" stroke="'+PC[1]+'" stroke-opacity="'+(op*.7).toFixed(2)+'" stroke-width="1.3" stroke-dasharray="1 5" stroke-linecap="round"/>';
+      else pd+='<path class="pseg" pathLength="1"'+dl+' d="'+d+'" fill="none" stroke="'+PC[0]+'" stroke-opacity=".5" stroke-width="3.4" stroke-dasharray="2 8" stroke-linecap="round" style="stroke-dasharray:2 8"/>'}
+    const hitD=tr.path(0,1);o+='<g class="pastg'+(nm?' pin':'')+'">'+pd+(hitD?'<path d="'+hitD+'" data-act="past" fill="none" stroke="transparent" stroke-width="26" stroke-linecap="round"/>':'');
     const BXp=[[H0[0]-64,H0[1]-22,H0[0]+64,H0[1]+46]],hitB=(x0,y0,w,h)=>BXp.some(b=>x0<b[2]+3&&x0+w>b[0]-3&&y0<b[3]+2&&y0+h>b[1]-2),PL=[];
-    PS.forEach((x,i)=>{const q=sj(np-i),sc=clamp(.7+(q[1]-1050)/1500,.7,1.5)*(sp<50?.8:1),cx=q[0],cy=q[1];
-      o+='<g data-act="pastedit" data-id="'+x.id+'"><circle cx="'+f1(cx)+'" cy="'+f1(cy-6)+'" r="'+(sp<50?16:26)+'" fill="transparent"/><ellipse cx="'+f1(cx)+'" cy="'+f1(cy+1)+'" rx="'+f1(11*sc)+'" ry="'+f1(3.4*sc)+'" fill="#000" opacity=".28"/>'+
-        '<ellipse cx="'+f1(cx)+'" cy="'+f1(cy-1.5*sc)+'" rx="'+f1(9.5*sc)+'" ry="'+f1(4.2*sc)+'" fill="'+ST[0]+'" stroke="var(--panel)" stroke-width=".8"/><ellipse cx="'+f1(cx+.6*sc)+'" cy="'+f1(cy-5.6*sc)+'" rx="'+f1(7*sc)+'" ry="'+f1(3.6*sc)+'" fill="'+ST[1]+'" stroke="var(--panel)" stroke-width=".8"/><ellipse cx="'+f1(cx-.4*sc)+'" cy="'+f1(cy-9*sc)+'" rx="'+f1(4.6*sc)+'" ry="'+f1(2.8*sc)+'" fill="'+ST[2]+'" stroke="var(--panel)" stroke-width=".8"/>'+
-        '<path d="M'+f1(cx)+' '+f1(cy-11*sc)+'V'+f1(cy-25*sc)+'" stroke="var(--text)" stroke-width="1.4" stroke-linecap="round"/><path d="M'+f1(cx)+' '+f1(cy-25*sc)+'l'+f1(10*sc)+' '+f1(3.6*sc)+'l'+f1(-10*sc)+' '+f1(3.6*sc)+'Z" fill="'+PC[2]+'"/></g>';PL.push({x,i,cx,cy})});
-    /* Schilder: neueste zuerst, nur wo Platz ist (zuerst außen, sonst innen) */
+    PS.forEach((x,i)=>{const j=np-i,q=sj(j),sc2=clamp(.7+(q[1]-1050)/1500,.7,1.5)*(sp<50?.8:1),cx=q[0],cy=q[1],dl=nm?' style="animation-delay:'+(.2+j*.07).toFixed(2)+'s"':'';
+      o+='<g class="pcairn" data-act="pastedit" data-id="'+x.id+'"'+dl+'><circle cx="'+f1(cx)+'" cy="'+f1(cy-6)+'" r="'+(sp<50?16:26)+'" fill="transparent"/><ellipse cx="'+f1(cx)+'" cy="'+f1(cy+1)+'" rx="'+f1(11*sc2)+'" ry="'+f1(3.4*sc2)+'" fill="#000" opacity=".28"/>'+
+        '<ellipse cx="'+f1(cx)+'" cy="'+f1(cy-1.5*sc2)+'" rx="'+f1(9.5*sc2)+'" ry="'+f1(4.2*sc2)+'" fill="'+ST[0]+'" stroke="var(--panel)" stroke-width=".8"/><ellipse cx="'+f1(cx+.6*sc2)+'" cy="'+f1(cy-5.6*sc2)+'" rx="'+f1(7*sc2)+'" ry="'+f1(3.6*sc2)+'" fill="'+ST[1]+'" stroke="var(--panel)" stroke-width=".8"/><ellipse cx="'+f1(cx-.4*sc2)+'" cy="'+f1(cy-9*sc2)+'" rx="'+f1(4.6*sc2)+'" ry="'+f1(2.8*sc2)+'" fill="'+ST[2]+'" stroke="var(--panel)" stroke-width=".8"/>'+
+        '<path d="M'+f1(cx)+' '+f1(cy-11*sc2)+'V'+f1(cy-25*sc2)+'" stroke="var(--text)" stroke-width="1.4" stroke-linecap="round"/><path d="M'+f1(cx)+' '+f1(cy-25*sc2)+'l'+f1(10*sc2)+' '+f1(3.6*sc2)+'l'+f1(-10*sc2)+' '+f1(3.6*sc2)+'Z" fill="'+PC[2]+'"/></g>';PL.push({x,i,j,cx,cy})});
     PL.slice().reverse().forEach(m=>{const x=m.x,tt=x.t.length>24?x.t.slice(0,23)+'…':x.t,dt=fd(x.at,{month:'short',year:'numeric'}).replace('.',''),w=Math.max(pw(tt,11),pw(dt,9.5))+22,py=m.cy-19,pr=m.cx+18,pl=m.cx-18-w,out=m.cx>=H0[0]?[pr,pl]:[pl,pr];
-      for(const px of out){if(hitB(px,py,w,34))continue;BXp.push([px,py,px+w,py+34]);o+='<g data-act="pastedit" data-id="'+x.id+'">'+plaque(px,py,w,34,'<text x="'+f1(px+11)+'" y="'+f1(py+15)+'" font-size="11" font-weight="650" fill="var(--text)">'+esc(tt)+'</text><text x="'+f1(px+11)+'" y="'+f1(py+27.5)+'" font-size="9.5" fill="var(--mute)">'+esc(dt)+'</text>')+'</g>';break}});
+      for(const px of out){if(hitB(px,py,w,34))continue;BXp.push([px,py,px+w,py+34]);o+='<g class="pplq" data-act="pastedit" data-id="'+x.id+'"'+(nm?' style="animation-delay:'+(.35+m.j*.07).toFixed(2)+'s"':'')+'>'+plaque(px,py,w,34,'<text x="'+f1(px+11)+'" y="'+f1(py+15)+'" font-size="11" font-weight="650" fill="var(--text)">'+esc(tt)+'</text><text x="'+f1(px+11)+'" y="'+f1(py+27.5)+'" font-size="9.5" fill="var(--mute)">'+esc(dt)+'</text>')+'</g>';break}});
     const q0=sj(ne+1),lt=np?'＋ Älteren Schritt eintragen':'＋ Vergangenheit eintragen',w0=pw(lt,11)+22;
-    o+='<g data-act="past">'+plaque(q0[0]-w0/2,q0[1]+10,w0,24,'<text x="'+f1(q0[0])+'" y="'+f1(q0[1]+26)+'" text-anchor="middle" font-size="11" font-weight="650" fill="var(--text)">'+lt+'</text>')+'</g></g>'}
+    o+='<g class="pplq" data-act="past">'+plaque(q0[0]-w0/2,q0[1]+10,w0,24,'<text x="'+f1(q0[0])+'" y="'+f1(q0[1]+26)+'" text-anchor="middle" font-size="11" font-weight="650" fill="var(--text)">'+lt+'</text>')+'</g></g>'}
   /* Start: Du bist hier */
   {const x=H0[0],y=H0[1],t='Start · Heute';o+='<g><circle class="pulse" cx="'+f1(x)+'" cy="'+f1(y)+'" r="11" fill="var(--text)"/><circle cx="'+f1(x)+'" cy="'+f1(y)+'" r="11" fill="var(--text)" stroke="var(--panel)" stroke-width="4"/><circle cx="'+f1(x)+'" cy="'+f1(y)+'" r="3.4" fill="var(--panel)"/>'+plaque(x-pw(t,12.5)/2-12,y+17,pw(t,12.5)+24,24,'<text x="'+f1(x)+'" y="'+f1(y+33.5)+'" text-anchor="middle" font-size="12.5" font-weight="700" fill="var(--text)">'+t+'</text>')+'<text class="tx" x="'+f1(x)+'" y="'+f1(y+57)+'" text-anchor="middle" font-size="9.5" font-weight="600" fill="var(--mute)">'+fd(Date.now(),{weekday:'short',day:'numeric',month:'short'}).toUpperCase().replace(/\./g,'')+'</text></g>'}
   /* Basislager: Zelte */
@@ -5380,7 +5466,7 @@ function lageSVG3D(st){
   const arc=(a0,a1,f,k)=>{let d='';for(let i=0;i<=k;i++){const p=Pp(a0+(a1-a0)*i/k,f);d+=(d?'L':'M')+f1(p[0])+' '+f1(p[1])}return d};
   let o=t3Head(st,es,T,'lage3','Lage in 3D. Mit Pfeiltasten bewegen, mit Plus und Minus zoomen');
   o+=v2Compass(nr?70:-10,470);
-  o+=t3Trees(L,es);
+  o+=t3River(L,es)+t3Tufts(L,es)+t3Trees(L,es);
   const kr=gs.map(g=>S.routes.filter(r=>r.goal===g.id&&run(r)&&inScope(r)).reduce((a,r)=>a+POW[r.power],0)),mx=Math.max(...kr,1);
   /* Stadtteile: weich getönte Zonen auf der Lichtung, getrennt durch Trampelpfade */
   {const pe=Pp(0,1),pn=Pp(Math.PI/2,1),rx=Math.max(60,Math.abs(pe[0]-C[0])),ry=Math.max(30,Math.abs(C[1]-pn[1])),sy=ry/rx,P=dark?{g:'#1d4a66',o:.55,s:'#5d6a8c',st:'#aebce0'}:{g:es==='glas'?'#7d9bb8':'#2f6b34',o:es==='glas'?.5:.6,s:es==='glas'?'#b9c8d8':'#a8a498',st:'#fff'},sr=rng(91);let defs='<defs>',z='',fl='',fw='',tu='',stn='';
