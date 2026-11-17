@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="de">
+<html lang="de" data-theme="dunkel">
 <head>
 <script src="config.js"></script>
 <link rel="icon" type="image/svg+xml" href="icon-v3.svg">
@@ -3690,7 +3690,7 @@ const sSw=(key,on)=>'<button class="tgl'+(on?' on':'')+'" role="switch" aria-che
 const STAB=[['karte','Karte'],['arbeit','Arbeit'],['daten','Daten']];
 D.settings=()=>{const t=ui.stab in {karte:1,arbeit:1,daten:1}?ui.stab:'karte';let h=dh('Zurück',null,'')+'<h2>Einstellungen</h2><div class="stabs">'+STAB.map(s=>'<button class="'+(t===s[0]?'on':'')+'" data-act="stab" data-v="'+s[0]+'">'+s[1]+'</button>').join('')+'</div>';
   if(t==='karte'){
-    h+='<div class="eb" style="margin:8px 0 10px">Erscheinungsbild</div><div class="seg sm" style="margin-bottom:6px">'+[['hell','Hell'],['dunkel','Dunkel'],['auto','Automatisch']].map(o=>'<button class="'+((S.appearance||'hell')===o[0]?'on':'')+'" data-act="set" data-k="appearance" data-v="'+o[0]+'">'+o[1]+'</button>').join('')+'</div><p class="xs mute" style="margin:0 2px 18px">Automatisch folgt der Einstellung deines Geräts.</p>';
+    h+='<div class="eb" style="margin:8px 0 10px">Erscheinungsbild</div><div class="seg sm" style="margin-bottom:6px">'+[['hell','Hell'],['dunkel','Dunkel'],['auto','Automatisch']].map(o=>'<button class="'+((S.appearance||'dunkel')===o[0]?'on':'')+'" data-act="set" data-k="appearance" data-v="'+o[0]+'">'+o[1]+'</button>').join('')+'</div><p class="xs mute" style="margin:0 2px 18px">Automatisch folgt der Einstellung deines Geräts.</p>';
     h+='<div class="eb" style="margin:8px 0 10px">Kartendesign</div><div class="seg sm" style="margin-bottom:14px"><button class="'+(MD2()?'on':'')+'" data-act="mdesign" data-v="neu">Neu · passt zur Erde</button><button class="'+(MD2()?'':'on')+'" data-act="mdesign" data-v="klassisch">Klassisch</button></div><div class="eb" style="margin:8px 0 10px">Welt</div>'+msCards()+'<p class="xs mute" style="margin:8px 2px 0">Kartendesign, Erde und Hintergrund passen zusammen.</p>';
     h+='<div class="sgrp" style="margin-top:16px"><div class="srow" style="display:block"><b>Erde beim Hochziehen</b><div class="xs mute" style="margin:2px 0 8px">Am Handy beim Herauszoomen</div>'+esCards()+'</div>'+sRow('Karte öffnet mit','',sSeg('mapOpen',[['richtung','Richtung'],['lage','Lage']],S.mapOpen))+sRow('Gelände','Höhenlinien im Hintergrund',sSw('terrain',S.terrain))+sRow('Beschriftungen','',sSeg('labels',[['alle','Alle'],['fokus','Nur Fokus']],S.labels))+sRow('Ideen-Funken','Sterne am Kartenrand',sSw('sparks',S.sparks))+sRow('Legende','Immer zeigen',sSw('legAlways',!!S.legAlways))+'</div>';
   }
@@ -3734,7 +3734,7 @@ function renderLayers(){
   if(m.focus){const f=$(m.focus,lay);if(f)f.focus();m.focus=null}
 }
 const render=()=>{renderMain();renderLayers()};
-const themeNow=()=>S.appearance==='dunkel'||(S.appearance==='auto'&&window.matchMedia&&matchMedia('(prefers-color-scheme: dark)').matches)?'dunkel':'hell';
+const themeNow=()=>!S.appearance||S.appearance==='dunkel'||(S.appearance==='auto'&&window.matchMedia&&matchMedia('(prefers-color-scheme: dark)').matches)?'dunkel':'hell';
 try{matchMedia('(prefers-color-scheme: dark)').addEventListener('change',()=>{if(S.appearance==='auto')render()})}catch(e){}
 const commit=()=>{save();render()};
 function open(m,rep){if(ui.cur&&!rep)ui.stack.push(ui.cur);ui.cur=m;renderLayers()}
@@ -3915,7 +3915,7 @@ document.addEventListener('keydown',e=>{const sv=document.activeElement;if(!sv||
   if(e.key==='+'||e.key==='='){e.preventDefault();zoomBy(sv,1.5,.5,.5)}if(e.key==='-'||e.key==='_'){e.preventDefault();zoomBy(sv,1/1.5,.5,.5)}if(e.key==='0'){e.preventDefault();A.zreset()}});
 /* ===== Neues Konzept: Karte als Fläche, Blatt darüber ===== */
 /* Höhe der App-Fläche: als Home-Bildschirm-App meldet iOS innerHeight manchmal um den oberen Rand zu klein */
-const KP_BUILD='20261117193141';
+const KP_BUILD='20261117193546';
 /* Auto-Update: auf GitHub Pages prüft die App beim Start eine winzige Versionsdatei und lädt bei neuerem Stand die frische Seite (umgeht den 10-Minuten-Zwischenspeicher) */
 (function(){try{if(location.protocol!=='https:'||!/github\.io$/.test(location.hostname)||KP_BUILD==='__BUILD__')return;
   fetch('version.txt?c='+Date.now(),{cache:'no-store'}).then(r=>r.ok?r.text():'').then(v=>{v=(v||'').trim();if(!/^\d{8,}$/.test(v)||v===KP_BUILD||v<KP_BUILD)return;
