@@ -3272,6 +3272,8 @@ body.skon .cosmos .glb,body.skon .cosmos .planet{visibility:hidden!important}
 /* Vollbild als Home-Bildschirm-App: kein Rand oben/unten, Statusleiste bekommt einen sanften Schleier */
 html,body{background:var(--bg)}
 body{position:fixed;top:0;right:0;left:0;bottom:auto;width:auto;height:var(--fh,100%)!important}
+html.sa{height:var(--fh,100%)!important;overflow:hidden}
+html.sa body{position:relative;top:auto;right:auto;left:auto;height:var(--fh,100%)!important}
 #app{height:100%!important}
 /* Als Home-Bildschirm-App ist der sichtbare Bereich höher als das Fenster (--fh): feste Ebenen reichen bis ganz nach unten */
 #layers,.sc,#sky,#bgt,.dlg{bottom:calc(100% - var(--fh,100%))}
@@ -3913,15 +3915,18 @@ document.addEventListener('keydown',e=>{const sv=document.activeElement;if(!sv||
   if(e.key==='+'||e.key==='='){e.preventDefault();zoomBy(sv,1.5,.5,.5)}if(e.key==='-'||e.key==='_'){e.preventDefault();zoomBy(sv,1/1.5,.5,.5)}if(e.key==='0'){e.preventDefault();A.zreset()}});
 /* ===== Neues Konzept: Karte als Fläche, Blatt darüber ===== */
 /* Höhe der App-Fläche: als Home-Bildschirm-App meldet iOS innerHeight manchmal um den oberen Rand zu klein */
-const KP_BUILD='20261117192937';
+const KP_BUILD='20261117193141';
 /* Auto-Update: auf GitHub Pages prüft die App beim Start eine winzige Versionsdatei und lädt bei neuerem Stand die frische Seite (umgeht den 10-Minuten-Zwischenspeicher) */
 (function(){try{if(location.protocol!=='https:'||!/github\.io$/.test(location.hostname)||KP_BUILD==='__BUILD__')return;
   fetch('version.txt?c='+Date.now(),{cache:'no-store'}).then(r=>r.ok?r.text():'').then(v=>{v=(v||'').trim();if(!/^\d{8,}$/.test(v)||v===KP_BUILD||v<KP_BUILD)return;
     if(new URLSearchParams(location.search).get('r')===v)return;location.replace(location.pathname+'?r='+v)}).catch(()=>{})}catch(e){}})();
-function fullH(){let h=window.innerHeight;try{const sa=navigator.standalone||matchMedia('(display-mode:standalone)').matches;if(sa&&window.innerHeight>window.innerWidth){const d=screen.height-window.innerHeight;if(d>0&&d<130)h=screen.height}}catch(e){}return h}
+function probeH(u){try{const e=document.createElement('div');e.style.cssText='position:absolute;left:0;top:0;width:1px;visibility:hidden;pointer-events:none;height:'+u;document.documentElement.appendChild(e);const h=e.offsetHeight;e.remove();return h}catch(x){return 0}}
+function isSA(){try{return !!(navigator.standalone||matchMedia('(display-mode:standalone)').matches)}catch(e){return false}}
+if(isSA())document.documentElement.classList.add('sa');
+function fullH(){let h=window.innerHeight;try{if(isSA()&&window.innerHeight>window.innerWidth){const c=[screen.height,probeH('100vh'),probeH('100lvh')];c.forEach(v=>{const d=v-window.innerHeight;if(d>0&&d<130&&v>h)h=v})}}catch(e){}return h}
 function fullHSet(){document.documentElement.style.setProperty('--fh',fullH()+'px')}
 fullHSet();addEventListener('resize',fullHSet);addEventListener('orientationchange',()=>setTimeout(fullHSet,250));
-function diagTxt(){let sa='nein';try{sa=(navigator.standalone||matchMedia('(display-mode:standalone)').matches)?'ja':'nein'}catch(e){}return 'Fenster '+innerWidth+'×'+window.innerHeight+' · Bildschirm '+screen.width+'×'+screen.height+' · App-Höhe '+fullH()+' · Rand '+(typeof safeTop==='function'?safeTop():0)+' · Vollbild '+sa+' · Stand '+KP_BUILD}
+function diagTxt(){let sa='nein';try{sa=(navigator.standalone||matchMedia('(display-mode:standalone)').matches)?'ja':'nein'}catch(e){}return 'Fenster '+innerWidth+'×'+window.innerHeight+' · Bildschirm '+screen.width+'×'+screen.height+' · App-Höhe '+fullH()+' · Rand '+(typeof safeTop==='function'?safeTop():0)+' · Vollbild '+sa+' · vh '+probeH('100vh')+'/'+probeH('100lvh')+'/'+probeH('100dvh')+' · vv '+Math.round((window.visualViewport||{}).height||0)+' · Stand '+KP_BUILD}
 const SNAP_PEEK=72;
 const snapHalf=()=>Math.round(fullH()*.5),snapFull=()=>Math.round(fullH()*.78);
 function greet(){const h=new Date().getHours();return h<11?'Guten Morgen':h<17?'Guten Tag':'Guten Abend'}
