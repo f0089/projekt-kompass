@@ -3308,11 +3308,12 @@ const POW={S:2,M:5,L:10},PN={S:'klein',M:'mittel',L:'groß'};
 const SN={fokus:'Fokus',unterwegs:'Unterwegs',basislager:'Basislager',angekommen:'Angekommen',gestrichen:'Gestrichen'};
 const KEY='projekt-kompass-v2';
 /* ===== Daten ===== */
-function blank(){return {v:2,me:'M',names:{M:'Du',P:'Partner'},vision:{short:'',long:'',year:new Date().getFullYear()+3,partnerOk:false},capacity:44,base:24,goals:[],routes:[],ideas:[],inbox:[],events:[],log:[],quarters:[],leitsatz:'',qn:{role:'',free:''},theme:'hell',acc:'glut',company:'',design:6,mapStyle:'relief',density:'komfort',fs:'normal',terrain:true,labels:'alle',sparks:true,wcDay:'So',wcTime:'19:00',mapOpen:'richtung',mapMode:'richtung',scope:'unsere',lastWeekly:0,lastQuarter:0,lastOpen:Date.now(),demo:false}}
+function blank(){return {v:2,me:'M',names:{M:'Du',P:'Partner'},vision:{short:'',long:'',year:new Date().getFullYear()+3,partnerOk:false},capacity:44,base:24,goals:[],routes:[],ideas:[],inbox:[],events:[],log:[],quarters:[],past:[],leitsatz:'',qn:{role:'',free:''},theme:'hell',acc:'glut',company:'',design:6,mapStyle:'relief',density:'komfort',fs:'normal',terrain:true,labels:'alle',sparks:true,wcDay:'So',wcTime:'19:00',mapOpen:'richtung',mapMode:'richtung',scope:'unsere',lastWeekly:0,lastQuarter:0,lastOpen:Date.now(),demo:false}}
 function seed(){
   const n=Date.now(),T=t0(),D=x=>T+x*DAY,S=blank();S.demo=true;
   S.vision={short:'Wir führen, andere machen die Arbeit – und wir haben Raum für Neues.',long:'Ich stehe auf, mache Sport und nehme mir Zeit, etwas Neues zu lernen. Die tägliche Arbeit erledigen andere, mein Team und meine Systeme. Ich koordiniere die Projekte und die Menschen, die sie tragen. Woran ich merke, dass es funktioniert: Ich habe Zeit, mit neuen Ideen zu spielen, um kreativ zu wachsen, neue Geschäftszweige zu erkunden und Projekte zu starten. Was ich dabei nie verliere: das Bild des großen Ganzen.',year:2029,partnerOk:false};
   const g1=uid(),g2=uid(),g3=uid();
+  S.past=[{id:uid(),t:'Idee entsteht',at:new Date(n-1000*DAY).setDate(1),note:'Der erste Gedanke, daraus etwas Eigenes zu machen.'},{id:uid(),t:'Erster Kunde',at:n-800*DAY,note:''},{id:uid(),t:'Team wächst auf drei',at:n-520*DAY,note:''},{id:uid(),t:'Neuer Shop online',at:n-260*DAY,note:''}];
   S.goals=[{id:g1,name:'Wiederkehrende Einnahmen',short:'Einnahmen',rank:1,date:D(320),crit:'5.000 € im Monat wiederkehrend',m:{label:'€ pro Monat',unit:'€',suf:'€ im Monat',start:0,now:1800,target:5000},ok:false},
    {id:g2,name:'Weniger operativ arbeiten',short:'Weniger operativ',rank:2,date:D(480),crit:'Nur noch 10 Std. operativ pro Woche',m:{label:'Std. operativ pro Woche',unit:'Std.',suf:'Std. operativ pro Woche',start:30,now:24,target:10},ok:false},
    {id:g3,name:'Eigene Marke',rank:3,date:D(660),crit:'20 Anfragen pro Monat über die Marke',m:{label:'Anfragen im Monat',unit:'',suf:'Anfragen im Monat',start:0,now:6,target:20},ok:false}];
@@ -3586,6 +3587,13 @@ D.ideas=()=>{const I=S.ideas,E=eth(),es=earthOf()==='klassisch'?'natur':earthOf(
    (rs.length?'<div class="row" style="justify-content:space-between;margin:18px 0 8px"><span class="eb o">Stärkt eine laufende Route</span><span class="xs mute">kommt im Wochencheck zuerst</span></div>'+rs.map(a=>'<div class="skcard"><div class="row" style="flex-wrap:nowrap;gap:12px"><svg width="34" height="34" viewBox="-14 -14 28 28" class="skg">'+ideaStar(0,0,3.6,E)+'</svg><div style="flex:1;min-width:0"><b>'+esc(a.x.t)+'</b><div class="xs mute">passt zu '+esc(a.r.name)+'</div></div></div><div class="wb"><button class="chip p" data-act="ideaconnect" data-id="'+a.x.id+'" data-rid="'+a.r.id+'">Verbinden</button>'+ch('ideaskip','Nicht jetzt',{id:a.x.id})+'</div></div>').join(''):'')+
    '<div class="eb" style="margin:20px 0 10px">So wird aus einem Funken etwas</div><div class="skcard sksteps">'+step(1,'Festhalten','in unter 5 Sekunden, ohne Kraft und ohne Erinnerungen')+step(2,'Verbinden','die App schlägt über gleiche Stichworte vor, du bestätigst mit einem Tipp')+step(3,'Entscheiden','im Wochencheck: stärkt eine Route · wird eine neue Route · bleibt liegen · wird verworfen')+'</div>'+
    '<div class="row" style="margin-top:14px;flex-wrap:nowrap"><input id="ideaIn" class="in" style="flex:1;min-width:0;margin:0" placeholder="＋ Neuen Stern festhalten …" data-enter="ideasave"><button class="btn pri" data-act="ideasave">Festhalten</button></div></div>'};
+
+D.past=m=>{const P=(S.past||[]).slice().sort((a,b)=>b.at-a.at),e=ui.pd||{},ed=e.id?P.find(x=>x.id===e.id):null,iso=t=>{const d=new Date(t);return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')},mon=t=>fd(t,{month:'short',year:'numeric'}).replace('.','');
+  return dh('Karte',null,P.length?P.length+(P.length===1?' Schritt':' Schritte'):'Noch leer')+'<h2>Vergangenheit</h2><p class="sm mute" style="margin:0 0 10px">Was hat dich bis hierher gebracht? Trage Schritte und Meilensteine ein. Sie erscheinen als Pfad auf der Karte, der bei „Start · Heute“ endet.</p>'+
+  '<div class="card" style="margin-top:12px"><div class="eb o">'+(ed?'Schritt bearbeiten':'Neuer Schritt')+'</div><label class="lb xs mute" for="pastT">Was war es?</label><input id="pastT" class="in" value="'+esc(ed?ed.t:'')+'" maxlength="60" placeholder="z. B. Erster Kunde" data-enter="pastsave"><label class="lb xs mute" for="pastD">Wann?</label><input id="pastD" class="in" type="date" style="width:170px" value="'+iso(ed?ed.at:Date.now())+'" max="'+iso(Date.now())+'"><label class="lb xs mute" for="pastN">Notiz (optional)</label><textarea id="pastN" class="in" style="min-height:64px" placeholder="Was ist da passiert, was hast du gelernt?">'+esc(ed&&ed.note||'')+'</textarea>'+
+  '<div class="row" style="margin-top:10px;justify-content:space-between"><div class="row">'+(ed?'<button class="chip" data-act="pastdel" data-id="'+ed.id+'">Löschen</button><button class="chip" data-act="pastnew">Abbrechen</button>':'')+'</div><button class="btn pri" data-act="pastsave">'+(ed?'Speichern':'Zum Pfad hinzufügen')+'</button></div></div>'+
+  (P.length?'<div class="eb" style="margin:20px 0 8px">Dein Weg bis heute</div>'+P.map(x=>'<button class="card" style="display:block;width:100%;text-align:left;margin-bottom:8px;font:inherit;color:inherit;cursor:pointer" data-act="pastedit" data-id="'+x.id+'"><div class="xs mute">'+esc(mon(x.at))+'</div><b>'+esc(x.t)+'</b>'+(x.note?'<div class="xs mute" style="margin-top:2px">'+esc(x.note)+'</div>':'')+'</button>').join(''):'<div class="empty">Noch nichts eingetragen. Der erste Schritt kann ganz klein sein.</div>')+
+  '<div class="row r" style="margin-top:12px"><button class="btn" data-act="close">Fertig</button></div>'};
 /* ===== Routenblatt: Titelbild aus der echten 3D-Landschaft + modernes Layout ===== */
 const IC={check:'<path d="M5 12.5l4.2 4.2L19 7"/>',clock:'<circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/>',user:'<circle cx="12" cy="8.5" r="3.6"/><path d="M5 19.5c.8-3.6 3.6-5.4 7-5.4s6.2 1.8 7 5.4"/>',block:'<circle cx="12" cy="12" r="8.5"/><path d="M6 6l12 12"/>',star:'<path d="M12 4.2l2.4 5 5.4.7-4 3.7 1 5.4L12 16.4 7.2 19l1-5.4-4-3.7 5.4-.7z"/>',hourglass:'<path d="M7 4.5h10M7 19.5h10M8 4.5c0 4 3 5 4 7.5 1-2.5 4-3.5 4-7.5M8 19.5c0-4 3-5 4-7.5 1 2.5 4 3.5 4 7.5"/>',x:'<path d="M6.5 6.5l11 11M17.5 6.5l-11 11"/>'};
 const ic=n=>'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+IC[n]+'</svg>';
@@ -3758,6 +3766,12 @@ A.mode=d=>{ui.mode=d.v;renderMain()};
 A.route=(d,el,e)=>{e.preventDefault();open({type:'route',id:d.id})};
 A.wins=()=>open({type:'wins'});
 A.vision=()=>open({type:'vision'});
+A.past=()=>{ui.pd={};open({type:'past'})};
+A.pastnew=()=>{ui.pd={};open({type:'past'},true)};
+A.pastedit=d=>{ui.pd={id:d.id};if(ui.cur&&ui.cur.type==='past')open({type:'past'},true);else open({type:'past'})};
+A.pastsave=()=>{const f=$('#pastT'),t=f.value.trim();if(!t){f.focus();return}const dv=$('#pastD').value,at=dv?new Date(dv+'T12:00:00').getTime():Date.now(),note=$('#pastN').value.trim(),e=ui.pd||{};S.past=S.past||[];const x=e.id&&S.past.find(i=>i.id===e.id);if(x){x.t=t;x.at=at;x.note=note}else S.past.push({id:uid(),t,at,note});ui.pd={};save();open({type:'past'},true);renderMain();toast(x?'Gespeichert.':'Auf dem Pfad eingetragen.')};
+A.pastdel=d=>{S.past=(S.past||[]).filter(x=>x.id!==d.id);ui.pd={};save();open({type:'past'},true);renderMain();toast('Schritt entfernt.')};
+
 
 A.settings=(d,el,e)=>{if(e&&e.preventDefault)e.preventDefault();ui.stab='karte';open({type:'settings'})};
 A.capture=()=>{ui.cap={type:'eingang',text:''};open({type:'capture',focus:'#capText'})};
@@ -3920,7 +3934,7 @@ document.addEventListener('keydown',e=>{const sv=document.activeElement;if(!sv||
   if(e.key==='+'||e.key==='='){e.preventDefault();zoomBy(sv,1.5,.5,.5)}if(e.key==='-'||e.key==='_'){e.preventDefault();zoomBy(sv,1/1.5,.5,.5)}if(e.key==='0'){e.preventDefault();A.zreset()}});
 /* ===== Neues Konzept: Karte als Fläche, Blatt darüber ===== */
 /* Höhe der App-Fläche: als Home-Bildschirm-App meldet iOS innerHeight manchmal um den oberen Rand zu klein */
-const KP_BUILD='20261117194049';
+const KP_BUILD='20261117200001';
 /* Auto-Update: auf GitHub Pages prüft die App beim Start eine winzige Versionsdatei und lädt bei neuerem Stand die frische Seite (umgeht den 10-Minuten-Zwischenspeicher) */
 (function(){try{if(location.protocol!=='https:'||!/github\.io$/.test(location.hostname)||KP_BUILD==='__BUILD__')return;
   fetch('version.txt?c='+Date.now(),{cache:'no-store'}).then(r=>r.ok?r.text():'').then(v=>{v=(v||'').trim();if(!/^\d{8,}$/.test(v)||v===KP_BUILD||v<KP_BUILD)return;
@@ -5321,6 +5335,28 @@ function mapSVG3D(st){
     const dt=g.date?fd(g.date,{month:'short',year:'numeric'}).replace('.',''):'';
     o+='<text class="tx" x="'+f1(x)+'" y="'+f1(y-41)+'" text-anchor="middle" font-size="9.5" font-weight="600" fill="var(--mute)">ZIEL '+g.rank+(dt?' · '+dt:'')+'</text><text class="tx" x="'+f1(x)+'" y="'+f1(y-27)+'" text-anchor="middle" font-size="15" font-weight="700" fill="var(--text)">'+esc(g.name)+'</text>';
     if(g.m){const t=nf(g.m.now)+' von '+nf(g.m.target)+' '+(g.m.unit||''),w=pw(t,11)+22,yy=p[1]+10;o+=plaque(x-w/2,yy,w,22,'<circle cx="'+f1(x-w/2+11)+'" cy="'+f1(yy+11)+'" r="3.6" fill="'+gc+'"/><text x="'+f1(x-w/2+19)+'" y="'+f1(yy+15)+'" font-size="11" font-weight="600" fill="var(--text)">'+esc(t)+'</text>')}});
+  /* Vergangenheit: Pfad aus der Tiefe bis Start · Heute */
+  {const PS=(S.past||[]).slice().sort((a,b)=>a.at-b.at).slice(-40),np=PS.length,
+    PC=({natur:['#e8d6a6','#7a5f33','#d9534f'],glas:['#ffffff','#5f7f9c','#ff7a59'],nacht:['#f3d39a','#2a2230','#ffb454'],blau:['#a9d6ff','#0d3560','#ffb454']})[es]||['#e8d6a6','#7a5f33','#d9534f'],
+    ST=dark?['#5d6688','#7f89ad','#a3acc9']:['#9a9484','#b9b3a3','#d6d1c3'],
+    cp=[[250,2640],[-340,2810],[320,3010],[-220,3200],[80,3350],[hm.x,hm.z]],pts=[];
+    for(let i=0;i<cp.length-1;i++){const p0=cp[Math.max(0,i-1)],p1=cp[i],p2=cp[i+1],p3=cp[Math.min(cp.length-1,i+2)];for(let k=0;k<8;k++){const u=k/8,u2=u*u,u3=u2*u;pts.push([.5*((2*p1[0])+(-p0[0]+p2[0])*u+(2*p0[0]-5*p1[0]+4*p2[0]-p3[0])*u2+(-p0[0]+3*p1[0]-3*p2[0]+p3[0])*u3),.5*((2*p1[1])+(-p0[1]+p2[1])*u+(2*p0[1]-5*p1[1]+4*p2[1]-p3[1])*u2+(-p0[1]+3*p1[1]-3*p2[1]+p3[1])*u3)])}}
+    pts.push(cp[cp.length-1]);
+    const tr=t3Trail(L,pts,3),NS=7;let pd='';
+    for(let k=0;k<NS;k++){const d=tr.path(k/NS,(k+1)/NS);if(!d)continue;const w=np?10-5*(k+.5)/NS:6,op=np?.45+.55*(k+1)/NS:.5;
+      if(np)pd+='<path d="'+d+'" fill="none" stroke="#000" stroke-opacity="'+(dark?.3:.15)+'" stroke-width="'+f1(w+3.5)+'" stroke-linecap="round" stroke-linejoin="round"/><path d="'+d+'" fill="none" stroke="'+PC[0]+'" stroke-opacity="'+op.toFixed(2)+'" stroke-width="'+f1(w)+'" stroke-linecap="round" stroke-linejoin="round"/><path d="'+d+'" fill="none" stroke="'+PC[1]+'" stroke-opacity="'+(op*.7).toFixed(2)+'" stroke-width="1.3" stroke-dasharray="1 5" stroke-linecap="round"/>';
+      else pd+='<path d="'+d+'" fill="none" stroke="'+PC[0]+'" stroke-opacity=".5" stroke-width="3.4" stroke-dasharray="2 8" stroke-linecap="round"/>'}
+    const hitD=tr.path(0,1);o+='<g class="pastg">'+pd+(hitD?'<path d="'+hitD+'" data-act="past" fill="none" stroke="transparent" stroke-width="34" stroke-linecap="round"/>':'');
+    const BXp=[[H0[0]-64,H0[1]-22,H0[0]+64,H0[1]+46]],hitB=(x0,y0,w,h)=>BXp.some(b=>x0<b[2]+3&&x0+w>b[0]-3&&y0<b[3]+2&&y0+h>b[1]-2),PL=[],dn=np>10?.78:1;
+    PS.forEach((x,i)=>{const t=np>1?.07+.77*i/(np-1):.45,q=tr.pt(t),sc=(1.3-.55*t)*dn,cx=q[0],cy=q[1];
+      o+='<g data-act="pastedit" data-id="'+x.id+'"><circle cx="'+f1(cx)+'" cy="'+f1(cy-6)+'" r="'+(np>10?16:26)+'" fill="transparent"/><ellipse cx="'+f1(cx)+'" cy="'+f1(cy+1)+'" rx="'+f1(11*sc)+'" ry="'+f1(3.4*sc)+'" fill="#000" opacity=".28"/>'+
+        '<ellipse cx="'+f1(cx)+'" cy="'+f1(cy-1.5*sc)+'" rx="'+f1(9.5*sc)+'" ry="'+f1(4.2*sc)+'" fill="'+ST[0]+'" stroke="var(--panel)" stroke-width=".8"/><ellipse cx="'+f1(cx+.6*sc)+'" cy="'+f1(cy-5.6*sc)+'" rx="'+f1(7*sc)+'" ry="'+f1(3.6*sc)+'" fill="'+ST[1]+'" stroke="var(--panel)" stroke-width=".8"/><ellipse cx="'+f1(cx-.4*sc)+'" cy="'+f1(cy-9*sc)+'" rx="'+f1(4.6*sc)+'" ry="'+f1(2.8*sc)+'" fill="'+ST[2]+'" stroke="var(--panel)" stroke-width=".8"/>'+
+        '<path d="M'+f1(cx)+' '+f1(cy-11*sc)+'V'+f1(cy-25*sc)+'" stroke="var(--text)" stroke-width="1.4" stroke-linecap="round"/><path d="M'+f1(cx)+' '+f1(cy-25*sc)+'l'+f1(10*sc)+' '+f1(3.6*sc)+'l'+f1(-10*sc)+' '+f1(3.6*sc)+'Z" fill="'+PC[2]+'"/></g>';PL.push({x,i,cx,cy})});
+    /* Schilder: neueste zuerst, nur wo Platz ist (rechts, sonst links) */
+    PL.slice().reverse().forEach(m=>{const x=m.x,tt=x.t.length>24?x.t.slice(0,23)+'…':x.t,dt=fd(x.at,{month:'short',year:'numeric'}).replace('.',''),w=Math.max(pw(tt,11),pw(dt,9.5))+22,py=m.cy-19,pr=m.cx+18,pl=m.cx-18-w,first=m.i%2===0,ord=first?[pr,pl]:[pl,pr];
+      for(const px of ord){if(hitB(px,py,w,34))continue;BXp.push([px,py,px+w,py+34]);o+='<g data-act="pastedit" data-id="'+x.id+'">'+plaque(px,py,w,34,'<text x="'+f1(px+11)+'" y="'+f1(py+15)+'" font-size="11" font-weight="650" fill="var(--text)">'+esc(tt)+'</text><text x="'+f1(px+11)+'" y="'+f1(py+27.5)+'" font-size="9.5" fill="var(--mute)">'+esc(dt)+'</text>')+'</g>';break}});
+    const q0=tr.pt(0),lw=np?150:176,lt=np?'＋ Schritt eintragen':'＋ Vergangenheit eintragen',w0=pw(lt,11)+22;
+    o+='<g data-act="past">'+plaque(q0[0]-w0/2,q0[1]+10,w0,24,'<text x="'+f1(q0[0])+'" y="'+f1(q0[1]+26)+'" text-anchor="middle" font-size="11" font-weight="650" fill="var(--text)">'+lt+'</text>')+'</g></g>'}
   /* Start: Du bist hier */
   {const x=H0[0],y=H0[1],t='Start · Heute';o+='<g><circle class="pulse" cx="'+f1(x)+'" cy="'+f1(y)+'" r="11" fill="var(--text)"/><circle cx="'+f1(x)+'" cy="'+f1(y)+'" r="11" fill="var(--text)" stroke="var(--panel)" stroke-width="4"/><circle cx="'+f1(x)+'" cy="'+f1(y)+'" r="3.4" fill="var(--panel)"/>'+plaque(x-pw(t,12.5)/2-12,y+17,pw(t,12.5)+24,24,'<text x="'+f1(x)+'" y="'+f1(y+33.5)+'" text-anchor="middle" font-size="12.5" font-weight="700" fill="var(--text)">'+t+'</text>')+'<text class="tx" x="'+f1(x)+'" y="'+f1(y+57)+'" text-anchor="middle" font-size="9.5" font-weight="600" fill="var(--mute)">'+fd(Date.now(),{weekday:'short',day:'numeric',month:'short'}).toUpperCase().replace(/\./g,'')+'</text></g>'}
   /* Basislager: Zelte */
@@ -5444,7 +5480,7 @@ A.sblogout=async()=>{try{await SB.cl.auth.signOut()}catch(e){}location.reload()}
 A.sbopen=()=>open({type:'login'});
 
 var SYN={st:'off',db:null,on:false,last:{},q:Promise.resolve(),t:null,rt:null,tm:null,snaps:{},order:null,canW:true,msg:'',applying:false,started:false};
-const SYN_ARR=['goals','routes','ideas','inbox','events','log','quarters'],SYN_CFG=['names','vision','capacity','base','leitsatz','qn','company','wcDay','wcTime','lastWeekly','lastQuarter','demo'],SYN_ALL=SYN_ARR.concat(['cfg']);
+const SYN_ARR=['goals','routes','ideas','inbox','events','log','quarters','past'],SYN_CFG=['names','vision','capacity','base','leitsatz','qn','company','wcDay','wcTime','lastWeekly','lastQuarter','demo'],SYN_ALL=SYN_ARR.concat(['cfg']);
 const synSafe=id=>String(id).replace(/[^A-Za-z0-9_\-.~:@+]/g,'_').slice(0,120)||'x';
 const synJ=v=>JSON.stringify(v===undefined?null:v,(k,x)=>x&&typeof x==='object'&&!Array.isArray(x)?Object.keys(x).sort().reduce((o,kk)=>{o[kk]=x[kk];return o},{}):x);
 const synClone=v=>JSON.parse(JSON.stringify(v));
