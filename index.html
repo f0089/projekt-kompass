@@ -821,6 +821,8 @@ body.skon .cosmos .glb,body.skon .cosmos .planet{visibility:hidden!important}
 
 /* Vollbild als Home-Bildschirm-App: kein Rand oben/unten, Statusleiste bekommt einen sanften Schleier */
 html,body{background:var(--bg)}
+body{position:fixed;top:0;right:0;bottom:0;left:0;width:auto;height:auto!important;min-height:-webkit-fill-available}
+#app{height:100%!important}
 @media (display-mode:standalone){body::before{content:"";position:fixed;left:0;right:0;top:0;height:calc(env(safe-area-inset-top,0px) + 10px);background:linear-gradient(rgba(0,0,0,.34),rgba(0,0,0,0));pointer-events:none;z-index:300}}
 </style>
 </head>
@@ -2197,6 +2199,7 @@ function cosDraw2D(now){
     const at=FR[k]*(.4+1.1*(li+.35<0?0:li+.35>1?1:li+.35));r+=90*at;gg+=180*at;b+=255*at;
     const o=k*4;d[o]=r>255?255:r;d[o+1]=gg>255?255:gg;d[o+2]=b>255?255:b;d[o+3]=a}
   g.putImageData(im,0,0)}
+function safeTop(){try{let e=document.getElementById('sfp');if(!e){e=document.createElement('div');e.id='sfp';e.style.cssText='position:fixed;left:0;top:0;width:1px;visibility:hidden;pointer-events:none;padding-top:env(safe-area-inset-top,0px)';document.body.appendChild(e)}return e.offsetHeight||0}catch(x){return 0}}
 const ramp=(a,b,x)=>{const t=clamp((x-a)/(b-a),0,1);return t*t*(3-2*t)};
 function cosAnchor0(st){
   const sv=st.querySelector('.mapbox svg');if(!sv||!sv.getScreenCTM)return;
@@ -2205,9 +2208,10 @@ function cosAnchor0(st){
 function cosApply(p,now){
   const st=app.querySelector('.stage');if(!st)return;const e=p*p*(3-2*p),set=(k,v)=>st.style.setProperty(k,typeof v==='number'?v.toFixed(3):v);
   const Wd=st.clientWidth,Hd=st.clientHeight;
-  set('--p',p.toFixed(4));set('--cy',(CZ.vis*.52).toFixed(0)+'px');
+  const TP=CZ.top=safeTop()>0?safeTop()+6:0,vv=Math.max(CZ.vis-TP,60);
+  set('--p',p.toFixed(4));set('--cy',(TP+vv*.52).toFixed(0)+'px');
   /* Geometrie: Wien ist der Fixpunkt des gesamten Zooms */
-  const Rf=clamp(CZ.vis*.47,60,150),Rs=Rf*Math.pow(3400/Rf,1-e),s=Rs/190;CZ.s=s;const cxF=Wd/2,cyF=CZ.vis*.52;
+  const Rf=clamp(vv*.47,60,150),Rs=Rf*Math.pow(3400/Rf,1-e),s=Rs/190;CZ.s=s;const cxF=Wd/2,cyF=TP+vv*.52;
   /* Eigendrehung: ganz ausgezoomt dreht sich die Erde gleichmäßig im Kreis (West nach Ost) */
   const dt=CZ.tp?Math.min(.1,Math.max(0,(now-CZ.tp)/1000)):0;CZ.tp=now;
   if(p<.5)CZ.spin=0;else if(!CZ.still)CZ.spin=(CZ.spin||0)-dt*7.5*ramp(.93,1,p);
@@ -2215,7 +2219,7 @@ function cosApply(p,now){
   CZ.lonC=(16.4+sp)*Math.PI/180;
   const la=48.2*Math.PI/180,T=35*Math.PI/180,dl=16.4*Math.PI/180-CZ.lonC,vxn=Math.cos(la)*Math.sin(dl),vyn=Math.sin(la)*Math.cos(T)-Math.cos(la)*Math.sin(T)*Math.cos(dl),vz=Math.sin(la)*Math.sin(T)+Math.cos(la)*Math.cos(T)*Math.cos(dl);
   const vyn0=Math.sin(la)*Math.cos(T)-Math.cos(la)*Math.sin(T);
-  const A0=CZ.A0||[Wd/2,CZ.vis*.55],A1=[cxF,cyF-vyn0*Rf],k=ramp(.08,.95,p),Ax=A0[0]+(A1[0]-A0[0])*k,Ay=A0[1]+(A1[1]-A0[1])*k;CZ.g={cx:Ax,cy:Ay+vyn0*Rs,r:Rs};
+  const A0=CZ.A0||[Wd/2,TP+vv*.55],A1=[cxF,cyF-vyn0*Rf],k=ramp(.08,.95,p),Ax=A0[0]+(A1[0]-A0[0])*k,Ay=A0[1]+(A1[1]-A0[1])*k;CZ.g={cx:Ax,cy:Ay+vyn0*Rs,r:Rs};
   /* Karte: schrumpft auf Wien zu und blendet aus */
   const mb=st.querySelector('.mapbox');if(mb)mb.style.transformOrigin=A0[0].toFixed(0)+'px '+A0[1].toFixed(0)+'px';
   set('--sm',1-ramp(0,.4,p)*.62);set('--om',1-ramp(.1,.36,p));
@@ -2287,20 +2291,20 @@ function cosOrb(st,Wd,Hd,op,now){
   const pt=q=>q[0].toFixed(1)+' '+q[1].toFixed(1);
   let b='',fr='';
   /* Ziele: feste Plaketten rund um die Erde. Kurze Zeiger zeigen zur Erde, berühren sie aber nicht – die Erde dreht sich frei dahinter */
-  const labs=[];{const vis=CZ.vis||Hd;
+  const labs=[];{const vis=CZ.vis||Hd,T=CZ.top||0;
     gs.forEach((g,k)=>{const p=ratio(g),nme=g.short||g.name,t1=nme.length>15?nme.slice(0,14)+'…':nme,w=clamp(t1.length*5.9+30,82,128);labs.push({g,p,t1,t2:Math.round(p*100)+' %',w,h:31,x:0,y:0,side:k%2,row:k>>1})});
     /* Schilder sitzen dicht an der Erde: horizontal an der Kugelkante, mit kleinem Abstand */
     const place=l=>{const dy=l.y+l.h/2-cy,half=Math.max(Math.sqrt(Math.max(R*R-dy*dy,0)),R*.45);l.x=clamp(l.side?cx+half+21:cx-half-21-l.w,6,Wd-l.w-6)};
     [0,1].forEach(sd=>{const c=labs.filter(l=>l.side===sd).sort((a,b)=>a.row-b.row),u=c[0],d=c[1];
       if(u)u.y=cy-R*.58-u.h/2;if(d)d.y=cy+R*.36-d.h/2;
-      c.forEach(l=>{place(l);if(l.y<62&&l.x+l.w>Wd-64)l.y=62});
-      if(d){if(d.x+d.w>Wd-76&&d.y+d.h>vis-42)d.y=vis-42-d.h;d.y=Math.min(d.y,vis-d.h-8);d.y=Math.max(d.y,u.y+u.h+8);if(d.y+d.h>vis-6){d.y=vis-6-d.h;u.y=Math.max(6,d.y-u.h-8)}}
-      c.forEach(l=>{l.y=clamp(l.y,6,vis-l.h-6);place(l)})})}
+      c.forEach(l=>{place(l);if(l.y<62+T&&l.x+l.w>Wd-64)l.y=62+T});
+      if(d){if(d.x+d.w>Wd-76&&d.y+d.h>vis-42)d.y=vis-42-d.h;d.y=Math.min(d.y,vis-d.h-8);d.y=Math.max(d.y,u.y+u.h+8);if(d.y+d.h>vis-6){d.y=vis-6-d.h;u.y=Math.max(6+T,d.y-u.h-8)}}
+      c.forEach(l=>{l.y=clamp(l.y,6+T,vis-l.h-6);place(l)})})}
   /* Sternbild: die Ideen am Himmel */
   const stars=[];
   S.ideas.slice(0,14).forEach((x,i)=>{const rg=rng([...String(x.id)].reduce((q,c)=>(q*31+c.charCodeAt(0))|0,7)>>>0);
-    for(let t=0;t<14;t++){const px=14+rg()*(Wd-28),py=12+rg()*(Hd-24),sz=2+rg()*3.2;
-      if(Math.hypot(px-cx,py-cy)<R*1.3+16)continue;if(px>Wd-70&&py<70)continue;if(labs.some(l=>px>l.x-14&&px<l.x+l.w+14&&py>l.y-14&&py<l.y+l.h+14))continue;if(stars.some(q=>Math.hypot(q[0]-px,q[1]-py)<26))continue;stars.push([px,py,sz]);break}});
+    for(let t=0;t<14;t++){const px=14+rg()*(Wd-28),py=12+(CZ.top||0)+rg()*(Hd-24-(CZ.top||0)),sz=2+rg()*3.2;
+      if(Math.hypot(px-cx,py-cy)<R*1.3+16)continue;if(px>Wd-70&&py<70+(CZ.top||0))continue;if(labs.some(l=>px>l.x-14&&px<l.x+l.w+14&&py>l.y-14&&py<l.y+l.h+14))continue;if(stars.some(q=>Math.hypot(q[0]-px,q[1]-py)<26))continue;stars.push([px,py,sz]);break}});
   stars.sort((a,c)=>a[0]-c[0]);
   stars.forEach((q,i)=>{const nx=stars[i+1];if(nx&&Math.hypot(nx[0]-q[0],nx[1]-q[1])<150)b+='<path d="M'+pt(q)+'L'+pt(nx)+'" stroke="rgba('+ac+',.2)" stroke-width=".8"/>'});
   stars.forEach((q,i)=>{const tw=.6+.4*Math.sin(now/650+i*1.9);b+='<circle cx="'+q[0].toFixed(1)+'" cy="'+q[1].toFixed(1)+'" r="'+(q[2]*2).toFixed(1)+'" fill="rgba('+ac+',.13)" opacity="'+tw.toFixed(2)+'"/>'+spark(q[0],q[1],q[2]*1.5,'#fff',tw)});
