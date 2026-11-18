@@ -3950,7 +3950,7 @@ document.addEventListener('keydown',e=>{const sv=document.activeElement;if(!sv||
   if(e.key==='+'||e.key==='='){e.preventDefault();zoomBy(sv,1.5,.5,.5)}if(e.key==='-'||e.key==='_'){e.preventDefault();zoomBy(sv,1/1.5,.5,.5)}if(e.key==='0'){e.preventDefault();A.zreset()}});
 /* ===== Neues Konzept: Karte als Fläche, Blatt darüber ===== */
 /* Höhe der App-Fläche: als Home-Bildschirm-App meldet iOS innerHeight manchmal um den oberen Rand zu klein */
-const KP_BUILD='20261118092924';
+const KP_BUILD='20261118093428';
 /* Auto-Update: auf GitHub Pages prüft die App beim Start eine winzige Versionsdatei und lädt bei neuerem Stand die frische Seite (umgeht den 10-Minuten-Zwischenspeicher) */
 (function(){try{if(location.protocol!=='https:'||!/github\.io$/.test(location.hostname)||KP_BUILD==='__BUILD__')return;
   fetch('version.txt?c='+Date.now(),{cache:'no-store'}).then(r=>r.ok?r.text():'').then(v=>{v=(v||'').trim();if(!/^\d{8,}$/.test(v)||v===KP_BUILD||v<KP_BUILD)return;
@@ -5298,7 +5298,7 @@ function t3Trail(L,pts,dh){const s=pts.map(p=>{const h=L.h(p[0],p[1])+(dh||5),q=
 
 /* Gipfelbauten: Zelt (Anfang), Hütte (unterwegs), Hütte mit Rauch und Licht (fast/ganz geschafft); Vision: Gipfelkreuz */
 const T3HP={natur:{w:'#a98258',w2:'#7d5d3f',r:'#74594a',r2:'#4a382d',s:'#f4f8fb',st:'#8d897e',win:'#2f3540',wl:'#ffd989',sm:'#ffffff',ln:'',gd:'#6e6a5c'},nacht:{w:'#5b5650',w2:'#403c39',r:'#3b3838',r2:'#232222',s:'#c9d6ea',st:'#4a4e58',win:'#151a26',wl:'#ffd27a',sm:'#c9d6ea',ln:'',gd:'#2a3b52'},glas:{w:'#e4edf5',w2:'#bfd2e3',r:'#7fa7ca',r2:'#557fa6',s:'#ffffff',st:'#9fb4c8',win:'#6a86a3',wl:'#fff1b8',sm:'#ffffff',ln:'',gd:'#b9c9d8'},blau:{w:'#0b4aa0',w2:'#083a80',r:'#1e78e0',r2:'#0f5ec0',s:'#bfeaff',st:'#0a3f86',win:'#06265a',wl:'#eaffff',sm:'#bfeaff',ln:'#9fd0ff',gd:'#0a3f86'}};
-function t3Hut(x,y,rt,es,gc,smp,ang){const P=T3HP[es]||T3HP.natur,ln=P.ln?' stroke="'+P.ln+'" stroke-width=".5" stroke-linejoin="round"':'',k=1.55,pl=es==='blau'?'#9fd0ff':'#000',po=es==='blau'?.45:.22;
+function t3Hut(x,y,rt,es,gc,smp,ang){const P=T3HP[es]||T3HP.natur,ln=P.ln?' stroke="'+P.ln+'" stroke-width=".5" stroke-linejoin="round"':'',k=.95,pl=es==='blau'?'#9fd0ff':'#000',po=es==='blau'?.45:.22;
   let o='<g data-act="goals" transform="translate('+x.toFixed(1)+' '+y.toFixed(1)+') scale('+k+')">';
   /* Standplatz: Bodenfarbe aus der Landschaft */
   const sx=x,sy=y,cm=(c,m)=>'rgb('+c.map(v=>Math.max(0,Math.min(255,Math.round(v*m)))).join(',')+')',bg=(es==='nacht'?[40,58,86]:es==='blau'?[12,70,150]:es==='glas'?[200,214,228]:[130,125,108]),
@@ -5482,7 +5482,7 @@ function mapSVG3D(st){
   o+='<g data-act="vision">'+t3Kreuz(vx+14,V[1]+2,es)+'<path d="M'+f1(vx)+' '+f1(vy+26)+'V'+f1(V[1])+'" stroke="var(--text)" stroke-width="2.2" stroke-linecap="round"/><circle cx="'+f1(vx)+'" cy="'+f1(V[1])+'" r="3" fill="var(--text)"/><circle cx="'+f1(vx)+'" cy="'+f1(vy)+'" r="26" fill="var(--panel)" fill-opacity=".96" stroke="var(--text)" stroke-width="2.4"/>'+(allOk?'<circle cx="'+f1(vx)+'" cy="'+f1(vy)+'" r="34" fill="none" stroke="var(--conqc)" stroke-width="3" opacity=".6"/>':'')+'<path d="M'+f1(vx-9)+' '+f1(vy+10)+'L'+f1(vx)+' '+f1(vy-9)+'L'+f1(vx+9)+' '+f1(vy+10)+'Z" fill="var(--text)"/><path d="M'+f1(vx)+' '+f1(vy-9)+'V'+f1(vy-22)+'L'+f1(vx+12)+' '+f1(vy-17.5)+'L'+f1(vx)+' '+f1(vy-13)+'" fill="var(--text)"/>'+plaque(vx+34,vy-12,pw(vt,12.5)+16,24,'<text x="'+f1(vx+42)+'" y="'+f1(vy+4.5)+'" font-size="12.5" font-weight="700" fill="var(--text)">'+vt+'</text>')+'</g>';
   /* Ziele auf ihren Gipfeln */
   gs.forEach(g=>{const p=P[g.id];if(!p)return;const rt=ratio(g),Cc=2*Math.PI*21,gc=gcG(g),x=p[0],y=p[1]-32;
-    const hs=t3HutSpot(L,GW[g.id],p);o+=t3Hut(hs.q[0],hs.q[1],rt,es,gc,t3Smp(T.im.f),hs.ang);
+    o+=t3Hut(p[0]+8,p[1]+.6,rt,es,gc,t3Smp(T.im.f),0);
     if(rt>=1)o+='<circle cx="'+f1(x)+'" cy="'+f1(y)+'" r="46" fill="'+gc+'" opacity=".2" style="filter:blur(10px)"/>';
     o+='<g data-act="goals"><path d="M'+f1(x)+' '+f1(y+21)+'V'+f1(p[1])+'" stroke="'+gc+'" stroke-width="2.2" stroke-linecap="round"/><circle cx="'+f1(x)+'" cy="'+f1(p[1])+'" r="3" fill="'+gc+'" stroke="var(--panel)" stroke-width="1.2"/><circle cx="'+f1(x)+'" cy="'+f1(y)+'" r="21" fill="var(--panel)" stroke="var(--line2)" stroke-width="1"/><circle cx="'+f1(x)+'" cy="'+f1(y)+'" r="21" fill="none" stroke="var(--panel2)" stroke-width="5"/><circle cx="'+f1(x)+'" cy="'+f1(y)+'" r="21" fill="none" stroke="'+gc+'" stroke-width="5" stroke-linecap="round" stroke-dasharray="'+(rt*Cc).toFixed(1)+' '+Cc.toFixed(1)+'" transform="rotate(-90 '+f1(x)+' '+f1(y)+')"/><path d="M'+f1(x-9)+' '+f1(y+7)+'L'+f1(x)+' '+f1(y-9)+'L'+f1(x+9)+' '+f1(y+7)+'Z" fill="'+gc+'"/></g>';
     if(rt>=1)o+='<path d="M'+f1(x)+' '+f1(y-9)+'V'+f1(y-30)+'L'+f1(x+13)+' '+f1(y-24)+'L'+f1(x)+' '+f1(y-18)+'" fill="'+gc+'"/>';
