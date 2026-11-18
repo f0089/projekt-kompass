@@ -3957,7 +3957,7 @@ document.addEventListener('keydown',e=>{const sv=document.activeElement;if(!sv||
   if(e.key==='+'||e.key==='='){e.preventDefault();zoomBy(sv,1.5,.5,.5)}if(e.key==='-'||e.key==='_'){e.preventDefault();zoomBy(sv,1/1.5,.5,.5)}if(e.key==='0'){e.preventDefault();A.zreset()}});
 /* ===== Neues Konzept: Karte als Fläche, Blatt darüber ===== */
 /* Höhe der App-Fläche: als Home-Bildschirm-App meldet iOS innerHeight manchmal um den oberen Rand zu klein */
-const KP_BUILD='20261118232720';
+const KP_BUILD='20261118234339';
 /* Auto-Update: auf GitHub Pages prüft die App beim Start eine winzige Versionsdatei und lädt bei neuerem Stand die frische Seite (umgeht den 10-Minuten-Zwischenspeicher) */
 (function(){try{if(location.protocol!=='https:'||!/github\.io$/.test(location.hostname)||KP_BUILD==='__BUILD__')return;
   fetch('version.txt?c='+Date.now(),{cache:'no-store'}).then(r=>r.ok?r.text():'').then(v=>{v=(v||'').trim();if(!/^\d{8,}$/.test(v)||v===KP_BUILD||v<KP_BUILD)return;
@@ -5419,13 +5419,13 @@ function t3Tufts(L,es,av){
     G.fl.forEach((c,j)=>{if(B.fl[j])o+='<path d="'+B.fl[j]+'" fill="'+hex(mx(h2(c),fc,ft*.6))+'"/>'})}
   return o}
 /* Pfad der Vergangenheit: Verlauf als weiche, unregelmäßige Kurve durchs Gelände (flache Stellen, Fluss meiden) */
-function t3PastGeom(L,sc,H0,PS,nr){
-  const np=PS.length,key=np+'|'+(nr?1:0);if(L.pastG&&L.pastG.key===key)return L.pastG;
+function t3PastGeom(L,sc,H0,PS,nr,CP){
+  const np=PS.length,key=np+'|'+(nr?1:0)+'|'+(CP?Math.round(CP.cx)+','+Math.round(CP.cy)+','+Math.round(CP.rx)+','+Math.round(CP.ry):'');if(L.pastG&&L.pastG.key===key)return L.pastG;
   const hm=sc.ST,ne=np||3,sp=np?Math.max(28,Math.min(86,1450/np)):80,SUB=8,AM=nr?200:165,rr=rng(4242),cp=[[hm.x,hm.z]],RV=sc.riv,yAt=zz=>L.p(0,zz,L.h(0,zz))[1];
   let z=hm.z,y0=H0[1];
   for(let j=1;j<=ne+1;j++){const want=y0+(j===1?92:sp*(.7+.65*rr()));let zz=z;for(let k=0;k<500&&yAt(zz)<want&&zz>900;k++)zz-=6;z=zz;y0=yAt(zz);
     const h=L.h(0,zz),a=L.p(0,zz,h),b2=L.p(100,zz,h),k=Math.abs(b2[0]-a[0])/100||.1,gr=Math.min(1,j/2.2),wv=.55*Math.sin(j*1.07+1.3)+.45*Math.sin(j*.43+4.1)+1.5*(t3vn(j*.7+2,9)-.5),wx=wv*AM*gr/k;
-    let bx=wx,bc=1e9;for(let d=-84;d<=84;d+=21){const x=wx+d/k,sl=Math.abs(L.h(x+22,zz)-L.h(x-22,zz))+Math.abs(L.h(x,zz+22)-L.h(x,zz-22));let c=sl+Math.abs(d)*.12;if(RV){const v=RV(zz);if(v.k>.02&&Math.abs(x-v.x)/v.s<v.w*2.4)c+=300}if(Math.abs(x*k)>AM*1.3)c+=200;if(c<bc){bc=c;bx=x}}
+    let bx=wx,bc=1e9;for(let d=-84;d<=84;d+=21){const x=wx+d/k,sl=Math.abs(L.h(x+22,zz)-L.h(x-22,zz))+Math.abs(L.h(x,zz+22)-L.h(x,zz-22));let c=sl+Math.abs(d)*.12;if(RV){const v=RV(zz);if(v.k>.02&&Math.abs(x-v.x)/v.s<v.w*2.4)c+=300}if(Math.abs(x*k)>AM*1.3)c+=200;if(CP){const q=L.p(x,zz,L.h(x,zz));if(((q[0]-CP.cx)/(CP.rx+34))**2+((q[1]-CP.cy)/(CP.ry+8))**2<1)c+=420}if(c<bc){bc=c;bx=x}}
     cp.push([bx,zz])}
   const pts=[];for(let i=0;i<cp.length-1;i++){const p0=cp[Math.max(0,i-1)],p1=cp[i],p2=cp[i+1],p3=cp[Math.min(cp.length-1,i+2)];for(let k=0;k<SUB;k++){const u=k/SUB,u2=u*u,u3=u2*u;pts.push([.5*((2*p1[0])+(-p0[0]+p2[0])*u+(2*p0[0]-5*p1[0]+4*p2[0]-p3[0])*u2+(-p0[0]+3*p1[0]-3*p2[0]+p3[0])*u3),.5*((2*p1[1])+(-p0[1]+p2[1])*u+(2*p0[1]-5*p1[1]+4*p2[1]-p3[1])*u2+(-p0[1]+3*p1[1]-3*p2[1]+p3[1])*u3)])}}
   pts.push(cp[cp.length-1]);
@@ -5436,6 +5436,22 @@ function t3PastGeom(L,sc,H0,PS,nr){
   tr.s.forEach(q=>{const k=Math.floor(q[0]/cell)+','+Math.floor(q[1]/cell);(hs.get(k)||hs.set(k,[]).get(k)).push(q)});
   const avoid=(x,y,R)=>{R=R||16;const cx=Math.floor(x/cell),cy=Math.floor(y/cell);for(let i=-1;i<=1;i++)for(let j=-1;j<=1;j++){const a=hs.get((cx+i)+','+(cy+j));if(a)for(const q of a)if(Math.abs(q[0]-x)<R&&Math.abs(q[1]-y)<R)return true}return false};
   return L.pastG={key,tr,sj,ne,np,sp,last,SUB,avoid,bottom:sj(ne+1)[1]+120}}
+/* Basislager: flach auf dem Talboden, Zelte im Raster, links unterhalb von Start (überdeckt keine Routen) */
+function t3Camp(L,es,H0){
+  const f1=v=>v.toFixed(1),all=S.routes.filter(r=>r.state==='basislager'&&inScope(r)).sort((a,b)=>(a.park||9e15)-(b.park||9e15)),bs=all.slice(0,12),N=bs.length,cols=N>4?3:N>1?2:1,rows=Math.max(1,Math.ceil(N/cols)),CW=N>4?100:108,RH=66,gw=cols*CW,gh=rows*RH,pr=(x,z,d)=>L.p(x,z,L.h(x,z)+(d||0));
+  const tx=Math.max(gw/2+50,H0[0]-260),ty=H0[1]+gh/2+36;let best=null;
+  const srch=(x0,x1,sx,z0,z1,sz)=>{for(let x=x0;x<=x1;x+=sx)for(let z=z0;z<=z1;z+=sz){if(z<L.Z0+30)continue;const q=pr(x,z),d=(q[0]-tx)*(q[0]-tx)+(q[1]-ty)*(q[1]-ty);if(!best||d<best.d)best={x,z,d}}};
+  srch(-2600,900,100,L.Z0+30,3600,100);const b0=best;srch(b0.x-100,b0.x+100,20,b0.z-100,b0.z+100,20);
+  const wx=best.x,wz=best.z,ppx=Math.max(.05,(pr(wx+100,wz)[0]-pr(wx,wz)[0])/100),ppz=Math.max(.04,(pr(wx,wz)[1]-pr(wx,wz+60)[1])/60),rxw=(gw/2+26)/ppx,rzw=(gh/2+62)/ppz;
+  let d='',x0=1e9,x1=-1e9,y0=1e9,y1=-1e9;for(let i=0;i<=56;i++){const a=i/56*Math.PI*2,q=pr(wx+Math.cos(a)*rxw,wz+Math.sin(a)*rzw,3);d+=(i?'L':'M')+f1(q[0])+' '+f1(q[1]);x0=Math.min(x0,q[0]);x1=Math.max(x1,q[0]);y0=Math.min(y0,q[1]);y1=Math.max(y1,q[1])}
+  const ground='<path d="'+d+'Z" fill="var(--panel)" fill-opacity=".16"/><path d="'+d+'Z" fill="url(#hatch)" opacity=".32"/><path d="'+d+'Z" fill="none" stroke="var(--dim)" stroke-width="1.3" stroke-dasharray="5 5"/>';
+  const items=bs.map((r,i)=>{const c=i%cols,rw=Math.floor(i/cols);return {r,x:tx+(c-(cols-1)/2)*CW,y:ty-gh/2+RH*(rw+.5)+14,s:.8+.08*(rows>1?rw/(rows-1):1)}});
+  return {ground,items,all,CW,cx:(x0+x1)/2,cy:(y0+y1)/2,rx:(x1-x0)/2,ry:(y1-y0)/2,top:y0,bot:y1,f1}}
+function t3CampLabels(C,es){const f1=C.f1;let o='<text class="tx" x="'+f1(C.cx)+'" y="'+f1(C.top+28)+'" text-anchor="middle" font-size="12" font-weight="700" letter-spacing=".08em" fill="var(--text)">BASISLAGER</text><text class="tx" x="'+f1(C.cx)+'" y="'+f1(C.top+43)+'" text-anchor="middle" font-size="10.5" fill="var(--mute)">'+C.all.length+(C.all.length===1?' Route':' Routen')+' bewusst geparkt</text>';
+  C.items.forEach(({r,x,y,s})=>{const nm=r.name.length>15?r.name.slice(0,14)+'…':r.name,sub=ok(r)?(r.park?'bis '+fd(r.park,{day:'numeric',month:'short'}):'wartet'):'Entwurf',w=Math.min(C.CW-6,Math.max(pw(nm,11),pw(sub,9.5))+16);
+    o+='<g data-act="route" data-id="'+r.id+'"><rect x="'+f1(x-C.CW/2+2)+'" y="'+f1(y-30)+'" width="'+(C.CW-4)+'" height="64" fill="transparent"/>'+t3Tent(x,y-4,s,es)+plaque(x-w/2,y+5,w,28,'<text x="'+f1(x)+'" y="'+f1(y+18)+'" text-anchor="middle" font-size="11" font-weight="650" fill="var(--text)">'+esc(nm)+'</text><text x="'+f1(x)+'" y="'+f1(y+29)+'" text-anchor="middle" font-size="9.5" fill="'+(ok(r)?'var(--mute)':'var(--warn)')+'">'+esc(sub)+'</text>')+'</g>'});
+  if(C.all.length>C.items.length)o+='<text class="tx" x="'+f1(C.cx)+'" y="'+f1(C.bot-12)+'" text-anchor="middle" font-size="10.5" fill="var(--mute)">+ '+(C.all.length-C.items.length)+' weitere in der Liste</text>';
+  return o}
 function mapSVG3D(st){
   const es=WORLDS[st]||'natur',T=t3Get('richtung',es);if(!T)return t3Wait(st,es,'richtung3');
   const {sc,L}=T,nr=NARROW(),f1=v=>v.toFixed(1),gs=S.goals.slice().sort((a,b)=>a.rank-b.rank).slice(0,4),dark=st==='bauplan'||st==='nacht';
@@ -5444,11 +5460,10 @@ function mapSVG3D(st){
   const n=Object.keys(P).length,hm=sc.ST,H0=L.p(hm.x,hm.z,L.h(hm.x,hm.z)),bl=sc.BL,B0=L.p(bl.x,bl.z,L.h(bl.x,bl.z));
   let o=t3Head(st,es,T,'richtung3','Karte in 3D. Mit Pfeiltasten bewegen, mit Plus und Minus zoomen');
   o+=v2Compass(nr?828:940,752);
-  const PS=(S.past||[]).slice().sort((a,b)=>a.at-b.at).slice(-50),PG=S.pastOn===false?null:t3PastGeom(L,sc,H0,PS,nr);ui.pastBottom=PG?PG.bottom:0;
-  o+=t3River(L,es)+t3Tufts(L,es,PG&&PG.avoid)+t3Trees(L,es,PG&&PG.avoid);
-  /* Basislager: Kreis am Talboden */
-  {let d='';for(let i=0;i<=48;i++){const a=i/48*Math.PI*2,x=bl.x+Math.cos(a)*300,z=bl.z+Math.sin(a)*215,q=L.p(x,z,L.h(x,z)+3);d+=(i?'L':'M')+f1(q[0])+' '+f1(q[1])}
-    o+='<path d="'+d+'Z" fill="var(--panel)" fill-opacity=".16"/><path d="'+d+'Z" fill="url(#hatch)" opacity=".32"/><path d="'+d+'Z" fill="none" stroke="var(--dim)" stroke-width="1.2" stroke-dasharray="5 5"/>'}
+  const CP=t3Camp(L,es,H0),PS=(S.past||[]).slice().sort((a,b)=>a.at-b.at).slice(-50),PG=S.pastOn===false?null:t3PastGeom(L,sc,H0,PS,nr,CP);ui.pastBottom=PG?PG.bottom:0;
+  /* Basislager: Bodenfläche */
+  const AVD=(x,y,R)=>(PG&&PG.avoid&&PG.avoid(x,y,R))||(((x-CP.cx)/(CP.rx+10))**2+((y-CP.cy)/(CP.ry+10))**2<1);
+  o+=t3River(L,es)+t3Tufts(L,es,AVD)+t3Trees(L,es,AVD)+CP.ground;
   if(es==='nacht'){const sr=rng(31);for(let i=0;i<90;i++){const x=-900+sr()*2700,y=-760+sr()*880,r=.7+sr()*1.5;const dl=(sr()*4).toFixed(1);o+='<circle '+(i%8===0?'class="tw" style="animation-delay:'+dl+'s" ':'')+'cx="'+f1(x)+'" cy="'+f1(y)+'" r="'+r.toFixed(2)+'" fill="#fff" opacity="'+(.35+sr()*.55).toFixed(2)+'"/>'}}
   o+=visText(450,nr?190:245);
   /* Ziele → Vision: Linie über den Grat */
@@ -5503,7 +5518,7 @@ function mapSVG3D(st){
     for(let k=0;k<NS;k++){const d=tr.path(k/NS,(k+1)/NS);if(!d)continue;const ym=sS[Math.round((k+.5)/NS*last)][1],w=clamp(2.6+(ym-1050)/450,2.6,6.2),op=np?.95-.4*(1-(k+.5)/NS):.6,dl=nm?' style="animation-delay:'+((NS-1-k)*.05).toFixed(2)+'s"':'',da=f1(w*.6)+' '+f1(w*2.5);
       pd+='<path class="pseg"'+dl+' d="'+d+'" fill="none" stroke="#000" stroke-opacity="'+(dark?.35:.22)+'" stroke-width="'+f1(w+1.8)+'" stroke-dasharray="'+da+'" stroke-linecap="round" stroke-linejoin="round"/><path class="pseg"'+dl+' d="'+d+'" fill="none" stroke="'+PC[0]+'" stroke-opacity="'+op.toFixed(2)+'" stroke-width="'+f1(w)+'" stroke-dasharray="'+da+'" stroke-linecap="round" stroke-linejoin="round"/>'}
     const hitD=tr.path(0,1);o+='<g class="pastg'+(nm?' pin':'')+'">'+pd+(hitD?'<path d="'+hitD+'" data-act="past" fill="none" stroke="transparent" stroke-width="26" stroke-linecap="round"/>':'');
-    const BXp=[[H0[0]-64,H0[1]-22,H0[0]+64,H0[1]+46]],hitB=(x0,y0,w,h)=>BXp.some(b=>x0<b[2]+3&&x0+w>b[0]-3&&y0<b[3]+2&&y0+h>b[1]-2),PL=[];
+    const BXp=[[H0[0]-64,H0[1]-22,H0[0]+64,H0[1]+46],[CP.cx-CP.rx,CP.top,CP.cx+CP.rx,CP.bot]],hitB=(x0,y0,w,h)=>BXp.some(b=>x0<b[2]+3&&x0+w>b[0]-3&&y0<b[3]+2&&y0+h>b[1]-2),PL=[];
     PS.forEach((x,i)=>{const j=np-i,q=sj(j),sc2=clamp(.7+(q[1]-1050)/1500,.7,1.5)*(sp<50?.8:1),cx=q[0],cy=q[1],dl=nm?' style="animation-delay:'+(.2+j*.07).toFixed(2)+'s"':'';
       o+='<g class="pcairn" data-act="pastedit" data-id="'+x.id+'"'+dl+'><circle cx="'+f1(cx)+'" cy="'+f1(cy-6)+'" r="'+(sp<50?16:26)+'" fill="transparent"/><ellipse cx="'+f1(cx)+'" cy="'+f1(cy+1)+'" rx="'+f1(11*sc2)+'" ry="'+f1(3.4*sc2)+'" fill="#000" opacity=".28"/>'+
         '<ellipse cx="'+f1(cx)+'" cy="'+f1(cy-1.5*sc2)+'" rx="'+f1(9.5*sc2)+'" ry="'+f1(4.2*sc2)+'" fill="'+ST[0]+'" stroke="var(--panel)" stroke-width=".8"/><ellipse cx="'+f1(cx+.6*sc2)+'" cy="'+f1(cy-5.6*sc2)+'" rx="'+f1(7*sc2)+'" ry="'+f1(3.6*sc2)+'" fill="'+ST[1]+'" stroke="var(--panel)" stroke-width=".8"/><ellipse cx="'+f1(cx-.4*sc2)+'" cy="'+f1(cy-9*sc2)+'" rx="'+f1(4.6*sc2)+'" ry="'+f1(2.8*sc2)+'" fill="'+ST[2]+'" stroke="var(--panel)" stroke-width=".8"/>'+
@@ -5514,13 +5529,8 @@ function mapSVG3D(st){
     o+='<g class="pplq" data-act="past">'+plaque(q0[0]-w0/2,q0[1]+10,w0,24,'<text x="'+f1(q0[0])+'" y="'+f1(q0[1]+26)+'" text-anchor="middle" font-size="11" font-weight="650" fill="var(--text)">'+lt+'</text>')+'</g></g>'}
   /* Start: Du bist hier */
   {const x=H0[0],y=H0[1],t='Start · Heute';o+='<g><circle class="pulse" cx="'+f1(x)+'" cy="'+f1(y)+'" r="11" fill="var(--text)"/><circle cx="'+f1(x)+'" cy="'+f1(y)+'" r="11" fill="var(--text)" stroke="var(--panel)" stroke-width="4"/><circle cx="'+f1(x)+'" cy="'+f1(y)+'" r="3.4" fill="var(--panel)"/>'+plaque(x-pw(t,12.5)/2-12,y+17,pw(t,12.5)+24,24,'<text x="'+f1(x)+'" y="'+f1(y+33.5)+'" text-anchor="middle" font-size="12.5" font-weight="700" fill="var(--text)">'+t+'</text>')+'<text class="tx" x="'+f1(x)+'" y="'+f1(y+57)+'" text-anchor="middle" font-size="9.5" font-weight="600" fill="var(--mute)">'+fd(Date.now(),{weekday:'short',day:'numeric',month:'short'}).toUpperCase().replace(/\./g,'')+'</text></g>'}
-  /* Basislager: Zelte, ordentlich im Raster, alle sichtbar */
-  {const all=S.routes.filter(r=>r.state==='basislager'&&inScope(r)).sort((a,b)=>(a.park||9e15)-(b.park||9e15)),bs=all.slice(0,12),CW=all.length>8?106:122,RH=74,cols=all.length>8?3:all.length>1?2:1,rows=Math.max(1,Math.ceil(bs.length/cols)),gh=rows*RH,cx=Math.max(B0[0],cols*CW/2+52),cy=B0[1]+46,rx=cols*CW/2+30,ry=gh/2+64,gy=cy-gh/2+34;
-    o+='<ellipse cx="'+f1(cx)+'" cy="'+f1(cy)+'" rx="'+f1(rx)+'" ry="'+f1(ry)+'" fill="var(--panel)" fill-opacity=".5"/><ellipse cx="'+f1(cx)+'" cy="'+f1(cy)+'" rx="'+f1(rx)+'" ry="'+f1(ry)+'" fill="url(#hatch)" opacity=".4"/><ellipse cx="'+f1(cx)+'" cy="'+f1(cy)+'" rx="'+f1(rx)+'" ry="'+f1(ry)+'" fill="none" stroke="var(--dim)" stroke-width="1.4" stroke-dasharray="6 6"/>';
-    o+='<text class="tx" x="'+f1(cx)+'" y="'+f1(cy-ry+24)+'" text-anchor="middle" font-size="13" font-weight="700" letter-spacing=".08em" fill="var(--text)">BASISLAGER</text><text class="tx" x="'+f1(cx)+'" y="'+f1(cy-ry+41)+'" text-anchor="middle" font-size="11.5" fill="var(--mute)">'+all.length+(all.length===1?' Route':' Routen')+' bewusst geparkt</text>';
-    bs.forEach((r,i)=>{const x=cx+((i%cols)-(cols-1)/2)*CW,y=gy+Math.floor(i/cols)*RH+10,nm=r.name.length>17?r.name.slice(0,16)+'…':r.name,sub=ok(r)?(r.park?'bis '+fd(r.park,{day:'numeric',month:'short'}):'wartet'):'Entwurf',w=Math.min(CW-8,Math.max(pw(nm,11.5),pw(sub,10))+18);
-      o+='<g data-act="route" data-id="'+r.id+'"><rect x="'+f1(x-CW/2+2)+'" y="'+f1(y-32)+'" width="'+(CW-4)+'" height="'+(RH-2)+'" fill="transparent"/>'+t3Tent(x,y,1,es)+plaque(x-w/2,y+9,w,32,'<text x="'+f1(x)+'" y="'+f1(y+23)+'" text-anchor="middle" font-size="11.5" font-weight="650" fill="var(--text)">'+esc(nm)+'</text><text x="'+f1(x)+'" y="'+f1(y+35)+'" text-anchor="middle" font-size="10" fill="'+(ok(r)?'var(--mute)':'var(--warn)')+'">'+esc(sub)+'</text>')+'</g>'});
-    if(all.length>bs.length)o+='<text class="tx" x="'+f1(cx)+'" y="'+f1(cy+ry-12)+'" text-anchor="middle" font-size="11" fill="var(--mute)">+ '+(all.length-bs.length)+' weitere in der Liste</text>'}
+  /* Basislager: Zelte */
+  o+=t3CampLabels(CP,es);
   const ir=rng(11);(S.sparks===false?[]:S.ideas.slice(0,5)).forEach((x,i)=>{const lf=i%2===0,px=lf?24+ir()*60:810+ir()*60,py=470+ir()*330,s=2.5+ir()*2.5;o+='<path data-act="ideas" d="M'+f1(px)+' '+f1(py-s*2)+'L'+f1(px+s*.5)+' '+f1(py-s*.5)+'L'+f1(px+s*2)+' '+f1(py)+'L'+f1(px+s*.5)+' '+f1(py+s*.5)+'L'+f1(px)+' '+f1(py+s*2)+'L'+f1(px-s*.5)+' '+f1(py+s*.5)+'L'+f1(px-s*2)+' '+f1(py)+'L'+f1(px-s*.5)+' '+f1(py-s*.5)+'Z" fill="var(--panel)" stroke="var(--dim)" stroke-width=".8" opacity=".85"/>'});
   if(!n)o+='<text class="tx" x="450" y="640" text-anchor="middle" font-size="15" fill="var(--mute)">Lege im Quartals-Review 2 bis 4 Ziele an.</text>';
   return o+'</svg>'}
